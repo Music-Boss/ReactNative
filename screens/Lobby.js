@@ -93,20 +93,6 @@ class Lobby extends Component {
           autoCorrect={false}
         />
 
-        
-        {/*<ScrollView style={{marginTop: 10}}>
-        {this.state.data.map(item =>{
-          <Card
-          key={item.idLista}
-          title={item.nombre}
-          >
-            <Text>Hello</Text>
-          </Card>
-        })
-        }
-        </ScrollView>
-        */}
-
         <FlatList 
           data={this.state.query}
           renderItem={
@@ -116,19 +102,6 @@ class Lobby extends Component {
           }     
           keyExtractor={(item) => item.idLista}
         />
-        {/*<FlatList
-          data={this.state.data}
-          renderItem={ ({ item }) =>
-          <Card>
-            <Card.title> {item.nombre}</Card.title>
-            <Card.FeaturedSubtitle>
-              {item.fechaCreacion}
-              {item.canciones}
-            </Card.FeaturedSubtitle>
-          </Card>
-          }
-          keyExtractor={(item) => item.idLista}
-        />*/}
       </View>
     );
   }
