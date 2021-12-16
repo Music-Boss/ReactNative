@@ -21,8 +21,8 @@ const SignUpPage = () =>{
     };
 
     return (
+      <ScrollView style = {styles.scrollView}>
       <View style={styles.container}>
-        <ScrollView style = {styles.scrollView}>
         <Image
         style={{ width: 150, height: 150, marginBottom: 15 }}
         source={require("../logomb.png")}
@@ -78,9 +78,8 @@ const SignUpPage = () =>{
         <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(LoginPage)}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
-        </ScrollView>
-  
       </View>
+      </ScrollView>
     );
 }
 

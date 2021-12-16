@@ -4,6 +4,8 @@ import { ListItem, SearchBar } from "react-native-elements";
 import filter from "lodash.filter";
 import axios from 'axios' 
 import { Card } from "react-native-elements/dist/card/Card";
+import { ScrollView } from "react-native-gesture-handler";
+import ListCard from "./ListCard";
  
 const Item = ({ title }) => {
   return (
@@ -17,32 +19,69 @@ const renderItem = ({ item }) => <Item title={item.title} />;
 class Lobby extends Component {
   constructor(props) {
     super(props);
-    var DATA;
+    /*var DATA;
     axios.get('https://musicboss-app.herokuapp.com/api/listas/').then(
       response => {
         console.log(DATA);
         DATA = response.data;
       }
-    );
+    );*/
     this.state = {
       loading: false,
-      data: DATA,
+      data: [],
+      query: [],
       error: null,
+      url: "https://musicboss-app.herokuapp.com/api/listas/",
       searchValue: "",
     };
-    this.arrayholder = DATA;
+    //this.arrayholder = DATA;
   }
   
+  componentDidMount(){
+    this.getListas();
+  }  
+
+  getListas = () => {
+    this.setState({ loading:true} );
+
+    fetch(this.state.url)
+    .then(res => {
+      console.log("res raws: "+res);
+      return res.json()})
+    .then(res => {
+      this.setState({
+        data: res,
+        query: res,
+        loading: false
+      })
+      console.log("res json: " +res);
+    });
+  };
+
   searchFunction = (text) => {
-    const updatedData = this.arrayholder.filter((item) => {
+    const updatedData = this.state.data.filter((item) => {
       const item_data = `${item.nombre.toUpperCase()})`;
       const text_data = text.toUpperCase();
       return item_data.indexOf(text_data) > -1;
     });
-    this.setState({ data: updatedData, searchValue: text });
+    this.setState({ query: updatedData, searchValue: text });
   };
   
   render() {
+    
+    if(this.state.loading){
+      return (
+        <View style={styles.container}>
+          <SearchBar
+          placeholder="Loading listas..."
+          lightTheme
+          round
+          value={this.state.searchValue}
+          />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <SearchBar
@@ -53,7 +92,31 @@ class Lobby extends Component {
           onChangeText={(text) => this.searchFunction(text)}
           autoCorrect={false}
         />
-        <FlatList
+
+        
+        {/*<ScrollView style={{marginTop: 10}}>
+        {this.state.data.map(item =>{
+          <Card
+          key={item.idLista}
+          title={item.nombre}
+          >
+            <Text>Hello</Text>
+          </Card>
+        })
+        }
+        </ScrollView>
+        */}
+
+        <FlatList 
+          data={this.state.query}
+          renderItem={
+            ({item}) => <ListCard 
+            lista= {item}
+            />
+          }     
+          keyExtractor={(item) => item.idLista}
+        />
+        {/*<FlatList
           data={this.state.data}
           renderItem={ ({ item }) =>
           <Card>
@@ -65,7 +128,7 @@ class Lobby extends Component {
           </Card>
           }
           keyExtractor={(item) => item.idLista}
-        />
+        />*/}
       </View>
     );
   }
