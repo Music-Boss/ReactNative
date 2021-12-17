@@ -6,6 +6,7 @@ import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
 import SignUpPage from './screens/SignUpPage';
 import Lobby from './screens/Lobby';
+import SongsPage from './screens/SongsPage';
 import { store } from './store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-gesture-handler';
@@ -49,6 +50,13 @@ export default function App() {
               <Stack.Screen
               name='Lobby'
               component={Lobby}
+              options={{
+                headerShown: false,
+              }}
+              />
+              <Stack.Screen
+              name='SongsPage'
+              component={SongsPage}
               options={{
                 headerShown: false,
               }}
