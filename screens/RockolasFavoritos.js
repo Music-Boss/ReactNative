@@ -22,7 +22,7 @@ const Item = ({ title }) => {
 };
   
 const renderItem = ({ item }) => <Item title={item.title} />;
-class Lobby extends Component {
+class RockolasFavoritos extends Component {
   constructor(props) {
     super(props);
     /*var DATA;
@@ -37,7 +37,7 @@ class Lobby extends Component {
       data: [],
       query: [],
       error: null,
-      url: "https://musicboss-app.herokuapp.com/api/listas/",
+      url: "https://musicboss-app.herokuapp.com/api/usuario/info/"+this.props.uid+"/",
       searchValue: "",
       token: "",
       modalShown: false,
@@ -51,7 +51,7 @@ class Lobby extends Component {
       usuarios: [],
       currUsername: this.props.currUsername,
       userId: null,
-      fav_listas:[]
+      uid: this.props.uid
     };
     //this.arrayholder = DATA;
   }
@@ -72,24 +72,22 @@ componentWillUnmount(){
   getListas = () => {
     this.setState({ loading:true} );
 
-    this.state.fav_listas = [];
-
     fetch(this.state.url)
     .then(res => {
       console.log("res raws: "+res);
       return res.json()})
     .then(res => {
       this.setState({
-        data: res,
-        query: res
+        data: res.fav_rockolas,
+        query: res.fav_rockolas
       })
       console.log("res json: " +res);
-      console.log("uid:", this.state.uid)
     })
     .then(_ => {
-      for(let i = 0; i < this.state.data.length; i++){
-        this.state.listaids = [this.state.data[i].idLista, ...this.state.listaids]
-      }
+        
+          this.setState({
+                loading: false
+          })
     });
 
     this.state.token = this.props.token;
@@ -114,54 +112,6 @@ componentWillUnmount(){
       console.log("length: ", this.state.cancionesMarcadas)
     });
 
-    fetch(this.state.urlUsuarios)
-    .then(res => {
-      console.log("res raws usuarios: "+res);
-      return res.json()})
-    .then(res => {
-      this.setState({
-        usuarios: res
-      })
-      console.log("res json usuarios: " +res);
-    })
-    .then(_ => {
-      console.log("length: ", this.state.usuarios.length);
-      console.log("users: ", this.state.usuarios);
-      console.log("curruser: ", this.state.currUsername.text);
-      
-      for(let i = 0; i < this.state.usuarios.length; i++){
-        if(this.state.usuarios[i].username == this.state.currUsername.text){
-          this.props.setUserid(this.state.usuarios[i].id);
-          this.state.userId = this.state.usuarios[i].id;
-        }
-      };
-      console.log("Usuario guardado en estado! ", this.state.userId)
-    })
-    .then(_ => {
-      fetch("https://musicboss-app.herokuapp.com/api/usuario/info/"+this.state.userId+"/")
-      .then(res => {
-        console.log("res raws: "+res);
-        return res.json()})
-      .then(res => {
-        console.log("LONGITUD DE FAV_LISTAS:",res.fav_listas.length)
-        for(let i = 0; i < res.fav_listas.length; i++){
-          this.state.fav_listas = [...this.state.fav_listas, res.fav_listas[i].idLista]
-        }
-        console.log("Fav_Listas:", this.state.fav_listas)
-      
-        console.log("res json: " +res);
-      })
-      .then(_ => {
-        console.log("Pantalla cargada")
-        this.setState({
-          loading: false
-        })
-      });
-
-    });
-
-    
-
     
   };
 
@@ -181,7 +131,7 @@ componentWillUnmount(){
       return (
         <View style={styles.container}>
           <SearchBar
-          placeholder="Cargando listas..."
+          placeholder="Cargando rockolas..."
           lightTheme
           round
           value={this.state.searchValue}
@@ -196,21 +146,21 @@ componentWillUnmount(){
         <Tabs data = {[
         {
             id: "0",
-            title: "Listas",
+            title: "Listas Favoritas",
             image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
-            screen: "Lobby",
-            disabled: "true"
+            screen: "ListasFavoritos"
         },
         {
             id:"1",
-            title:"Rockolas",
+            title:"Rockolas Favoritas",
             image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
-            screen: "Rockolas", // Change in future....
+            screen: "RockolasFavoritos", // Change in future....
+            disabled: "true"
         }
     ]}/> 
         
         <SearchBar
-          placeholder="Buscar en las Listas..."
+          placeholder="Buscar en las Rockolas..."
           lightTheme
           round
           value={this.state.searchValue}
@@ -229,9 +179,9 @@ componentWillUnmount(){
           renderItem={
             ({item}) => <ListCard 
             lista= {item}
-            view="Lobby"
+            view="RockolasFavoritos"
             favorito={true}
-            esFavorito={this.state.fav_listas.indexOf(item.idLista) > -1 ? true : false}
+            esFavorito={true}
             />
           }     
           keyExtractor={(item) => item.idLista}
@@ -247,8 +197,7 @@ componentWillUnmount(){
                 id: "0",
                 title: "Explorar",
                 image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
-                screen: "Lobby",
-                disabled: "true"
+                screen: "Lobby"
             },
             {
                 id:"1",
@@ -261,6 +210,7 @@ componentWillUnmount(){
               title:"Favoritos",
               image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
               screen: "ListasFavoritos", // Change in future....
+              disabled: "true"
             },
             {
               id:"3",
@@ -275,12 +225,6 @@ componentWillUnmount(){
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-      setUserid: (id) => dispatch(setUserId(id))
-  }
-};
-
 const mapStateToProps = state => {
   return {
       token: state.nav.token,
@@ -289,7 +233,7 @@ const mapStateToProps = state => {
   }
 }
   
-export default connect(mapStateToProps, mapDispatchToProps)(Lobby);
+export default connect(mapStateToProps)(RockolasFavoritos);
   
 const styles = StyleSheet.create({
   container: {

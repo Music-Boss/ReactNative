@@ -1,17 +1,81 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { Alert ,StyleSheet, Text, View, TextInput, TouchableOpacity, Image, AsyncStorage } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import MainPage from './MainPage';
 import { useDispatch } from 'react-redux';
-import {setEmail, setPassword} from '../slices/navSlice'
+import {setUsername, setPassword, setToken} from '../slices/navSlice'
 import { navSlice } from '../slices/navSlice';
 import SignUpPage from './SignUpPage';
+import {selectUsername} from '../slices/navSlice'
+import {selectPassword} from '../slices/navSlice'
+import { useRef, useEffect } from "react"
+import { useSelector } from 'react-redux';
+import Lobby from './Lobby';
+
+
+
 
 const LoginPage = () =>{
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const username = useSelector(selectUsername);
+    const pword = useSelector(selectPassword);
+
+    const login = () => {
+      console.log(JSON.stringify({
+        username: username,
+        password: pword
+      }));
+      var petition = JSON.stringify({
+        username: username,
+        password: pword
+      });
+      petition = petition.replace('{"text":','');
+      petition = petition.replace('{"text":','');
+      petition = petition.replace('},',',');
+      petition = petition.replace('}}','}');
+      console.log("petition ", petition)
+      
+      fetch('https://musicboss-app.herokuapp.com/api/login/', 
+      {
+        method: 'POST',
+        headers: { 
+          'Content-Type':'application/json' 
+        },
+        body: petition
+      })
+      .then(response => {
+        if (response.ok) {
+          return response;
+        }
+        else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+          }
+      },
+      error => {
+              throw error;
+      })
+      .then(response => response.json() )
+      .then(response => {
+        console.log("response ",response);
+        if(response == 'Contraseña incorrecta'){
+          Alert.alert("Contraseña Incorrecta.");
+        }
+        else if(response == 'Usuario inválido'){
+          Alert.alert("Usuario inválido.");
+        }
+        else{
+          dispatch(setToken(response));
+          navigation.navigate('Lobby');
+        }
+      }
+      ).catch(error => console.log("Error", error));
+      
+    }
   
     return (
       <View style={styles.container}>
@@ -23,9 +87,9 @@ const LoginPage = () =>{
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
-            placeholder="Email..." 
+            placeholder="Nombre de Usuario..." 
             placeholderTextColor="#ffffff"
-            onChangeText={text => dispatch(setEmail({
+            onChangeText={text => dispatch(setUsername({
                 text
             }))}/>
             
@@ -34,20 +98,20 @@ const LoginPage = () =>{
           <TextInput  
             secureTextEntry
             style={styles.inputText}
-            placeholder="Password..." 
+            placeholder="Contraseña..." 
             placeholderTextColor="#ffffff"
             onChangeText={text => dispatch(setPassword({
                 text
             }))}/>
         </View>
         <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
+          <Text style={styles.forgot}>Olvidaste la contraseña?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate(MainPage)}>
+        <TouchableOpacity style={styles.loginBtn} onPress={() => login()}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(SignUpPage)}>
-          <Text style={styles.loginText}>SIGN UP</Text>
+          <Text style={styles.loginText}>REGISTRARSE</Text>
         </TouchableOpacity>
 
   

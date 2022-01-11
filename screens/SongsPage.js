@@ -8,6 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import ListCardSong from "./ListCardSong";
 import { useNavigation, useNavigationParam } from '@react-navigation/native';
 import {connect} from 'react-redux'
+import Bottom from '../tabs/Bottom'
  
 const Item = ({ title }) => {
   return (
@@ -19,95 +20,87 @@ const Item = ({ title }) => {
   
 const renderItem = ({ item }) => <Item title={item.title} />;
 class SongsPage extends Component {
-  
 
   constructor(props) {
     super(props);
 
     this.state = {
       loading: false,
-      data: [],
-      query: [],
+      data: this.props.canciones,
+      query: this.props.canciones,
       error: null,
       url: 'https://musicboss-app.herokuapp.com/api/canciones/',
       searchValue: "",
+      title: this.props.nameL
     };
     //this.arrayholder = DATA;
   }
   
   componentDidMount(){
-    this.getListas();
   }  
 
-  getListas = () => {
-    this.setState({ loading:true} );
-
-    const songs = this.props.canciones;
-
-    console.log("songs ", songs.songs);
-
-    songs.songs.map((item) => {
-        console.log(item);
-        var s = ""+item;
-        fetch(this.state.url+s)
-        .then(res => {
-          console.log("res raws: "+res);
-          return res.json()})
-        .then(res => {
-          this.setState({
-            data: [...this.state.data,res],
-            query: [...this.state.query,res],
-            loading: false
-          })
-          console.log("res json: " +res);
-        });})
-    
-  };
-
-  searchFunction = (text) => {
-    const updatedData = this.state.data.filter((item) => {
-      const item_data = `${item.nombre.toUpperCase()})`;
-      const text_data = text.toUpperCase();
-      return item_data.indexOf(text_data) > -1;
-    });
-    this.setState({ query: updatedData, searchValue: text });
-  };
   
   render() {
     
     if(this.state.loading){
       return (
         <View style={styles.container}>
-          <SearchBar
-          placeholder="Loading listas..."
-          lightTheme
-          round
-          value={this.state.searchValue}
-          />
+            <Text  style= {{textAlign : "center", fontSize:20}}>
+             Cargando Lista de Canciones....
+             </Text> 
         </View>
       );
     }
 
     return (
-      <View style={styles.container}>
-        <SearchBar
-          placeholder="Search Here..."
-          lightTheme
-          round
-          value={this.state.searchValue}
-          onChangeText={(text) => this.searchFunction(text)}
-          autoCorrect={false}
-        />
-        <FlatList 
-          data={this.state.query}
-          renderItem={
-            ({item}) => <ListCardSong 
-            lista= {item}
+      <View style={{flex:1}}>
+        <View style={{marginTop:30}}>
+          <Text style= {{textAlign : "center", fontSize:20}}>Lista de Canciones {this.state.title}</Text>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} nestedScrollEnabled>
+          <View style={styles.container}>
+            <FlatList 
+              data={this.state.query}
+              style={{flex:0}}
+              renderItem={
+                ({item}) => <ListCardSong 
+                lista= {item}
+                />
+              }
+              horizontal = {false}    
+              keyExtractor={(item) => item.idCancion}
+              numColumns = {2}
             />
-          }     
-          keyExtractor={(item) => item.idCancion}
-        />
-
+          </View>
+        </ScrollView>
+        <View>
+          <Bottom data = {[
+                {
+                    id: "0",
+                    title: "Explorar",
+                    image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
+                    screen: "Lobby"
+                },
+                {
+                    id:"1",
+                    title:"Mis Listas",
+                    image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+                    screen: "MyLists", // Change in future....
+                },
+                {
+                  id:"2",
+                  title:"Favoritos",
+                  image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+                  screen: "ListasFavoritos", // Change in future....
+                },
+                {
+                  id:"3",
+                  title:"Perfil",
+                  image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+                  screen: "User", // Change in future....
+                },
+                ]}/>
+        </View>         
         
       </View>
     );
@@ -116,7 +109,8 @@ class SongsPage extends Component {
 
 const mapStateToProps = state => {
     return {
-        canciones: state.nav.songs
+        canciones: state.nav.songs,
+        nameL: state.nav.nList
     }
 }
   

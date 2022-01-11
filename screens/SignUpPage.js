@@ -1,24 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import MainPage from './MainPage';
 import { useDispatch } from 'react-redux';
-import {setUsername, setEmail, setPassword, setPassword2, setLists} from '../slices/navSlice'
+import {setUsername, setEmail, setPassword, setPassword2, setLists, setToken} from '../slices/navSlice'
 import { navSlice } from '../slices/navSlice';
 import LoginPage from './LoginPage';
 import Lobby from './Lobby';
 import axios from 'axios';
 import { SafeAreaView, ScrollView } from 'react-native';
+import {selectUsername, selectEmail, selectPassword, selectPassword2} from '../slices/navSlice'
+import { useRef, useEffect } from "react"
+import { useSelector } from 'react-redux';
 
 const SignUpPage = () =>{
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
-    const getData = () => {
-        
-    };
+    const selector = useSelector(selectUsername);
+    const selector2 = useSelector(selectEmail);
+    const selector3 = useSelector(selectPassword);
+    const selector4 = useSelector(selectPassword2);    
 
     return (
       <ScrollView style = {styles.scrollView}>
@@ -28,11 +32,11 @@ const SignUpPage = () =>{
         source={require("../logomb.png")}
         />
         <Text style={styles.logo}>MusicBoss</Text>
-        <Text style={styles.logo2}>Sign Up</Text>
+        <Text style={styles.logo2}>Registrarse</Text>
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
-            placeholder="Username..." 
+            placeholder="Nombre de Usuario..." 
             placeholderTextColor="#ffffff"
             onChangeText={text => dispatch(setUsername({
                 text
@@ -51,7 +55,7 @@ const SignUpPage = () =>{
           <TextInput  
             secureTextEntry
             style={styles.inputText}
-            placeholder="Password..." 
+            placeholder="Contraseña..." 
             placeholderTextColor="#ffffff"
             onChangeText={text => dispatch(setPassword({
                 text
@@ -61,19 +65,113 @@ const SignUpPage = () =>{
           <TextInput   
             secureTextEntry 
             style={styles.inputText}
-            placeholder="Confirm password..." 
+            placeholder="Confirmar contraseña..." 
             placeholderTextColor="#ffffff"
             onChangeText={text => dispatch(setPassword2({
                 text
             }))}/>
         </View>
         <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
+          <Text style={styles.forgot}>Olvidaste la contraseña?</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress={() => 
-          
-          navigation.navigate(Lobby)}>
-          <Text style={styles.loginText}>SIGN UP</Text>
+        {
+          const email = selector2;
+          const username = selector;
+          const password = selector3;
+          const password2 = selector4;
+          if(email == null || username == null || password == null || password2 == null){
+            Alert.alert("Por favor. Completa todos los campos.");
+          }
+          else if(email.text == '' || username.text == '' || password.text == '' || password2.text == ''){
+            Alert.alert("Por favor. Completa todos los campos.");
+          }
+          else if(password.text.length < 8){
+            Alert.alert("La contraseña debe ser de al menos 8 carácteres.");
+          }
+          else if(password.text != password2.text){
+            Alert.alert("Las contraseñas no coinciden.");
+          }
+          else{
+            const petition = '{"username":"'+ username.text+'","email":"'+email.text+'","password":"'+password.text+'"}';
+            console.log("petition ", petition)
+            fetch('https://musicboss-app.herokuapp.com/api/usuarios/', 
+            {
+              method: 'POST',
+              headers: { 
+                'Content-Type':'application/json' 
+              },
+              body: petition
+            })
+            .then(response => {
+              if (response.ok) {
+                return response;
+              }
+              else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                Alert.alert("Por favor. Ingrese los campos correctamente.");
+                throw error;
+
+                }
+            },
+            error => {
+                    throw error;
+            })
+            .then(response => response.json() )
+            .then(response => {
+              console.log("response ",response);
+              if(response.username[0] == 'Ya existe un usuario con este nombre.'){
+                Alert.alert("Ya existe un usuario con este nombre.");
+              }
+              else{
+                var petitionfriends = '{"usuario":'+response.id+', "amigos":[]}'
+                fetch('https://musicboss-app.herokuapp.com/api/usuario/info/', 
+                {
+                  method: 'POST',
+                  headers: { 
+                    'Content-Type':'application/json' 
+                  },
+                  body: petitionfriends
+                });
+                var petition = '{"username":"'+username.text+'", "password":"'+password.text+'"}'
+                fetch('https://musicboss-app.herokuapp.com/api/login/', 
+                {
+                  method: 'POST',
+                  headers: { 
+                    'Content-Type':'application/json' 
+                  },
+                  body: petition
+                })
+                .then(response => {
+                  if (response.ok) {
+                    return response;
+                  }
+                  else {
+                    var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                    error.response = response;
+                    throw error;
+                    }
+                },
+                error => {
+                        throw error;
+                })
+                .then(response => response.json() )
+                .then(response => {
+                  console.log("response ",response);
+                  dispatch(setToken(response));
+                  Alert.alert("Usuario Creado Exitosamente!");
+                  navigation.navigate('Lobby');
+                }
+                ).catch(error => console.log("Error", error));
+                
+              }
+            }
+            ).catch(error => console.log("Error", error));
+          }
+        }
+        }>
+        <Text style={styles.loginText}>REGISTRARSE</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(LoginPage)}>
           <Text style={styles.loginText}>LOGIN</Text>

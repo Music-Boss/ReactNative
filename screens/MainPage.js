@@ -3,12 +3,12 @@ import React, {useState} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import {selectEmail} from '../slices/navSlice'
+import {selectUsername} from '../slices/navSlice'
 import { useRef, useEffect } from "react"
 import { useSelector } from 'react-redux';
 
 const MainPage = () =>{
-  const email = useSelector(selectEmail);
+  const email = useSelector(selectUsername);
   
     return (
       <View style={styles.container}>
