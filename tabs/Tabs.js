@@ -21,9 +21,9 @@ const Tabs = ({data}) => {
             <TouchableOpacity
                 onPress={() => navigation.navigate(item.screen)}
                 disabled={item.disabled}
-                style={{width : windowWidth/2, backgroundColor:"#912427", 
+                style={[{width : windowWidth/2, backgroundColor:"#912427", 
                 alignItems:"center",
-                justifyContent:"center"}}
+                justifyContent:"center"}, item.disabled ? {backgroundColor:"#FF0606"} : {backgroundColor:"#912427"}]}
             >
                 <View style={{flexDirection:'row'}}>
                     <Image

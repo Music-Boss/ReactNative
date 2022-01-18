@@ -6,6 +6,7 @@ import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
 import {selectLists} from '../slices/navSlice'
 import { useSelector } from 'react-redux';
 import {connect} from 'react-redux'
+import Bottom from '../tabs/Bottom'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -40,7 +41,7 @@ class ListofListsfromRockola extends Component {
       }
     );*/
     this.state = {
-      loading: false,
+      loading: true,
       lista: null,
       rockola: this.props.rockola,
       token: this.props.token
@@ -49,24 +50,31 @@ class ListofListsfromRockola extends Component {
   }
 
   componentDidMount() {
-
+    this.state.lista = this.state.rockola.listas[0];
+    this.state.loading = false;
+    this.forceUpdate()
   }
 
   render(){
+    if(this.state.loading){
+      return(
+        <View>
+          <Text style= {{textAlign : "center", fontSize:20, marginTop:20}}>
+            Cargando...
+          </Text>
+
+        </View>
+      )
+    }
+
     return (
       <View style={{flex:1}}>
       <View>
-      <Text style= {{textAlign : "center", fontSize:20, marginTop:20}}>
+      <Text style= {{textAlign : "center", fontSize:20, marginTop:25}}>
         {this.state.rockola.nombre}
       </Text>
-      {this.state.lista == null ? 
-      <View>
-      <Text style= {{textAlign : "center", fontSize:20}}>
-        Listas de la rockola.
-      </Text>
-      </View>
-      :
-      <View style ={{marginTop: 30}}>
+      
+      <View style ={{marginTop: 15}}>
       <Text style= {{textAlign : "center", fontSize:20}}>
         Lista de canciones de lista {this.state.lista.nombre}.
       </Text>
@@ -81,7 +89,6 @@ class ListofListsfromRockola extends Component {
       />
       </View>
 
-      }
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginTop:5 }} nestedScrollEnabled>
         <View style={styles.container}>
@@ -106,7 +113,7 @@ class ListofListsfromRockola extends Component {
           
         
           <Text style= {{textAlign : "center", fontSize:20}}>
-            Listas de reproducción.
+            Lista de reproducción.
           </Text>
 
       
@@ -198,6 +205,34 @@ class ListofListsfromRockola extends Component {
           
         </View>
       </ScrollView>
+      <View>
+      <Bottom data = {[
+            {
+                id: "0",
+                title: "Explorar",
+                image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
+                screen: "Lobby",
+            },
+            {
+                id:"1",
+                title:"Mis Listas",
+                image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+                screen: "MyLists", // Change in future....
+            },
+            {
+              id:"2",
+              title:"Favoritos",
+              image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+              screen: "ListasFavoritos", // Change in future....
+            },
+            {
+              id:"3",
+              title:"Perfil",
+              image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+              screen: "User", // Change in future....
+            },
+             ]}/>
+      </View>
 
 
       </View>
