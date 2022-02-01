@@ -3,30 +3,14 @@ import { FlatList, StyleSheet, Text, View, Dimensions, Image, Button, TouchableO
 import Carousel from 'react-native-snap-carousel'
 import { ScrollView } from "react-native-gesture-handler";
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
-import {selectLists} from '../slices/navSlice'
+import {selectLists, setNList} from '../slices/navSlice'
 import { useSelector } from 'react-redux';
 import {connect} from 'react-redux'
 import Bottom from '../tabs/Bottom'
 
 const windowWidth = Dimensions.get('window').width;
 
-const renderItem = ({item}) => {
-  return (
-    <Card style={{width : windowWidth, marginTop: 20}}>
-        <Card.Title title={item.nombre} subtitle={item.artista} />
-        <Card.Content>
-        <Paragraph></Paragraph>
-        
-        </Card.Content>
-          <Card.Cover source={{ uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} />
-        {/*<Card.Actions>
-        <Button>Cancel</Button>
-        <Button>Ok</Button>
-        </Card.Actions>
-        */}
-    </Card>
-  )
-}
+
 
 
 class ListofListsfromRockola extends Component {
@@ -44,15 +28,105 @@ class ListofListsfromRockola extends Component {
       loading: true,
       lista: null,
       rockola: this.props.rockola,
-      token: this.props.token
+      token: this.props.token,
+      idcanciones:[]
     };
     //this.arrayholder = DATA;
   }
 
   componentDidMount() {
     this.state.lista = this.state.rockola.listas[0];
+    for(let i = 0; i < this.state.rockola.canciones.length; i++){
+      this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+    }
+    for(let j = 0; j < this.state.lista.canciones.length; j++){
+      console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
+    }         
     this.state.loading = false;
     this.forceUpdate()
+  }
+
+  renderItem = ({item}) => {
+    return (
+      <Card style={{width : windowWidth, marginTop: 20}}>
+          <Card.Title title={item.nombre} subtitle={item.artista} />
+          <Card.Content>
+          <Paragraph></Paragraph>
+          
+          </Card.Content>
+            <Card.Cover source={{ uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} />
+          {/*<Card.Actions>
+          <Button>Cancel</Button>
+          <Button>Ok</Button>
+          </Card.Actions>
+          */}
+          <TouchableOpacity
+            style={styles.loginBtn}
+            disabled = {this.state.idcanciones.indexOf(item.idCancion) > -1 ? true : false}
+                          onPress={() => {
+                                fetch('https://musicboss-app.herokuapp.com/api/rockola/'+this.state.rockola.idRockola+'/canciones/add/'+item.idCancion+'/', 
+                                {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type':'application/json',  
+                                    'Authorization':'Token '+this.state.token
+                                  }
+                                })
+                                .then(response => {
+                                  if (response.ok) {
+                                    Alert.alert("Rockola Editada");
+                                    console.log("response ", response)
+                                    fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
+                                    {
+                                      method: 'GET',
+                                      headers: {
+                                        'Content-Type':'application/json'
+                                      }
+                                    })
+                                    .then(response => {
+                                      if (response.ok) {
+                                        return response;
+                                      }
+                                      else {
+                                        var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                                        error.response = response;
+                                        throw error;
+                                        }
+                                    },
+                                    error => {
+                                            throw error;
+                                    })
+                                    .then(response => response.json() )
+                                    .then(response => {
+                                      console.log("response add song ", response)
+                                      this.state.rockola = response;
+                                      this.state.lista = this.state.rockola.listas[0];
+                                      this.state.idcanciones = [...this.state.idcanciones, item.idCancion]
+                                      this.forceUpdate();
+                                      
+                                    })
+                                    .catch(error => console.log("Error", error));
+                                    return response;
+                                  }
+                                  else {
+                                    var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                                    error.response = response;
+                                    Alert.alert("Rockola No Pudo Ser Editada");
+                                    throw error;
+                                    }
+                                },
+                                error => {
+                                        throw error;
+                                })
+                                .catch(error => console.log("Error", error));
+                              
+                            
+                          }}
+                        >
+                          <Text style={styles.loginText}>Agregar a lista de reproducción.</Text>
+                      </TouchableOpacity>
+      </Card>
+    )
   }
 
   render(){
@@ -85,8 +159,9 @@ class ListofListsfromRockola extends Component {
         itemHeight={700}
         itemWidth={400}
         sliderHeight={700}
-        renderItem={renderItem}
+        renderItem={this.renderItem}
       />
+       
       </View>
 
       </View>
@@ -133,30 +208,45 @@ class ListofListsfromRockola extends Component {
                     <Card.Title title={item.nombre} subtitle={item.artista} left={(props) => <Image source={{uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} style={[{width:50, height:50}]} />} right={(props) => 
                     <TouchableOpacity
                         onPress={() => {
-                          for(let i = 0; i < this.state.rockola.canciones.length; i++){
-                            if(this.state.rockola.canciones[i].idCancion == item.idCancion){
-                              var canciones = this.state.rockola.canciones;
-                              var petition = '{"canciones": [';
-                              for(let j = 0; j < canciones.length; j++){
-                                if(j != i)
-                                  petition = petition + canciones[j].idCancion + ', ';
-                              }
-                              petition = petition.slice(0,-2)
-                              petition = petition + ']}'
-                              console.log('Eliminar canción')
-                              console.log('Petition ', petition)
-                              fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
+                              fetch('https://musicboss-app.herokuapp.com/api/rockola/'+this.state.rockola.idRockola+'/canciones/remove/'+item.idCancion+'/', 
                               {
-                                method: 'PATCH',
+                                method: 'DELETE',
                                 headers: {
                                   'Content-Type':'application/json',  
                                   'Authorization':'Token '+this.state.token
-                                },
-                                body: petition
+                                }
                               })
                               .then(response => {
                                 if (response.ok) {
                                   Alert.alert("Rockola Editada");
+                                  fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
+                                  {
+                                    method: 'GET',
+                                    headers: {
+                                      'Content-Type':'application/json'
+                                    }
+                                  })
+                                  .then(response => {
+                                    if (response.ok) {
+                                      return response;
+                                    }
+                                    else {
+                                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                                      error.response = response;
+                                      throw error;
+                                      }
+                                  },
+                                  error => {
+                                          throw error;
+                                  })
+                                  .then(response => response.json() )
+                                  .then(response => {
+                                    
+                                    this.state.rockola = response;
+                                    this.state.lista = this.state.rockola.listas[0];
+                                    this.forceUpdate();
+                                  })
+                                  .catch(error => console.log("Error", error));
                                   return response;
                                 }
                                 else {
@@ -169,18 +259,9 @@ class ListofListsfromRockola extends Component {
                               error => {
                                       throw error;
                               })
-                              .then(response => response.json() )
-                              .then(response => {
-                                console.log("response ",response);
-                                this.setState({
-                                  rockola: response
-                                })
-                                this.forceUpdate();
-
-                              }
-                              ).catch(error => console.log("Error", error));
-                            }
-                          }
+                              .catch(error => console.log("Error", error));
+                            
+                          
                         }}
                       >
                         <Text style={{marginRight:20}}>Eliminar</Text>
@@ -249,12 +330,32 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(ListofListsfromRockola);
+const mapDispatchToProps = (dispatch) => {
+  return {
+      setRockola: (rockola) => dispatch(setNList(rockola))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListofListsfromRockola);
 
 
 const styles = StyleSheet.create({
   container: {
     marginTop: 30,
     padding: 2,
+  },
+  loginBtn:{
+    width:"80%",
+    backgroundColor:"#912427",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:20,
+    marginBottom:10,
+    marginLeft: 30
+  },
+  loginText:{
+    color:"white"
   }
 });

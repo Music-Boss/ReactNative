@@ -20,6 +20,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import EditList from './screens/EditList';
 import ListasFavoritos from './screens/ListasFavoritos';
 import RockolasFavoritos from './screens/RockolasFavoritos';
+import AddFriends from './screens/AddFriends'
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -121,6 +122,13 @@ export default function App() {
               <Stack.Screen
               name='RockolasFavoritos'
               component={RockolasFavoritos}
+              options={{
+                headerShown: false,
+              }}
+              />
+              <Stack.Screen
+              name='AddFriends'
+              component={AddFriends}
               options={{
                 headerShown: false,
               }}

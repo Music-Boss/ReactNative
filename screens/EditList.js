@@ -90,7 +90,8 @@ class EditList extends Component {
               if(this.state.cancionesYaAgregadas[i].idCancion == this.state.canciones[j].idCancion){
                 console.log("True");
                 this.state.canciones.splice(j, 1);
-                this.state.cancionesMarcadas.splice(j,1);
+                this.state.cancionesMarcadas.splice(j,
+                  );
                 this.state.canciones = [this.state.cancionesYaAgregadas[i], ...this.state.canciones];
                 this.state.cancionesMarcadas = [true, ...this.state.cancionesMarcadas];
               }
@@ -169,7 +170,7 @@ class EditList extends Component {
                     
                     <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
                     <Card.Title title={item.nombre} subtitle={item.artista} left={(props) => <TouchableOpacity onPress = {() => {this.state.imagenMarcadas = item.fuente; this.forceUpdate();}}><Image source={{uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcadas == item.fuente ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
-                        onPress={() => {this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] = !this.state.cancionesMarcadas[this.state.canciones.indexOf(item)]; this.forceUpdate();console.log("canciones marcadas ",this.state.cancionesMarcadas);console.log("canciones query ",this.state.cancionesquery)}}
+                        onPress={() => {this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] = !this.state.cancionesMarcadas[this.state.canciones.indexOf(item)]; this.forceUpdate();console.log("canciones marcadas ",this.state.cancionesMarcadas);console.log("canciones query ",this.state.cancionesquery); console.log("canciones item ", this.state.canciones.indexOf(item))}}
                       >{this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] == true? <Icon
                         name='check'
                         type='Entypo'
@@ -199,7 +200,7 @@ class EditList extends Component {
               var petition = '{"canciones":[';
                   for(let i = 0; i < this.state.canciones.length; i++){
                     if(this.state.cancionesMarcadas[i]){
-                      var number = i+1;
+                      var number = this.state.canciones[i].idCancion;
                       var bar = ''+number;
                       if(this.state.count == 0){
                         petition = petition+bar;

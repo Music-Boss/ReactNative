@@ -179,7 +179,7 @@ componentWillUnmount(){
           renderItem={
             ({item}) => <ListCard 
             lista= {item}
-            view="ListasFavoritos"
+            view="Lobby"
             favorito={true}
             esFavorito={true}
             />

@@ -37,6 +37,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   }
 
   const deleteList = () =>{
+    console.log("Delete List")
     var id = 0;
     var page = '';
     if(view == "Lobby"){
@@ -113,6 +114,66 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       navigation.navigate('ListofListsfromRockola');
     }
   }
+
+  const deleteList2 = () =>{
+    console.log("Delete List")
+    var id = 0;
+    var page = '';
+    if(view == "Lobby"){
+      id = lista.idLista
+      page = 'listas'
+    }
+    else{
+      id = lista.idRockola
+      page = 'rockolas'
+    }
+    fetch('https://musicboss-app.herokuapp.com/api/'+page+'/'+id+'/', 
+    {
+        method: 'DELETE',
+        headers: {
+        'Content-Type':'application/json',  
+        'Authorization':'Token '+token
+        }
+    })
+    .then(response => {
+      if (response.ok) {
+      return response;
+      }
+      else {
+      var error = new Error('Error ' + response.status + ': ' + response.statusText);
+      error.response = response;
+      Alert.alert("No está autorizado a borrar esta lista!")
+      throw error;
+      }
+  },
+  error => {
+    Alert.alert("No está autorizado a borrar esta lista!")
+          throw error;
+  })
+  .then(response => {if(response.status == 204){
+    if(view == "Lobby")
+      Alert.alert("Lista borrada exitosamente!");
+    else
+      Alert.alert("Rockola borrada exitosamente!");
+    
+
+  }
+  })
+  .then(response => {
+    if(view == "Lobby"){
+    navigation.navigate('MyRockolas');
+    navigation.navigate('MyLists');
+    }
+    else{
+    navigation.navigate('MyLists');
+    navigation.navigate('MyRockolas');      
+    }
+    
+
+      console.log("response F:",response);
+  }
+  ).catch(error => console.log("Error", error));
+  }
   
   return(
 
@@ -129,123 +190,51 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
         <TouchableOpacity onPress={() => 
         {
           if(view == "Lobby" || view == "ListasFavoritos"){
-          var listaids = [];
-          fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                  .then(response => {
-                    if (response.ok) {
-                      return response;
-                    }
-                    else {
-                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                      error.response = response;
-                      throw error;
-                      }
-                  },
-                  error => {
-                          throw error;
-                  })
-                  .then(response => response.json() )
-                  .then(response => {
-                    for(let i = 0; i < response.fav_listas.length; i++){
-                      listaids = [...listaids, response.fav_listas[i].idLista]
-                    }
-                  })
-                  .then(response => {
-                    console.log("response ",response);
-                    var petition = '{"fav_listas":['
-                    var count = 0
-                    for(let i = 0; i < listaids.length; i++){
-                      if(listaids[i] != lista.idLista){
-                        petition = petition + listaids[i]+', '
-                        count = count + 1
-                      }
-                    }
-                    if(count > 0)
-                      petition = petition.slice(0,-2);
-                    petition = petition + ']}'
-                    console.log("petition:", petition)
-                    fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
-                    {
-                      method: 'PATCH',
-                      headers: {
-                        'Content-Type':'application/json',  
-                        'Authorization':'Token '+token
-                      },
-                      body: petition
-                    })
-                    .then(response => {
-                      if (response.ok) {
-                        return response;
-                      }
-                      else {
-                        var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                        error.response = response;
-                        throw error;
-                        }
-                    },
-                    error => {
-                            throw error;
-                    })
-                    .then(response => response.json() )
-                    .then(response => {
-                      console.log("response ",response);
-                      if(view == "Lobby"){
-                        navigation.navigate('Rockolas');
-                        navigation.navigate('Lobby');
-                      }
-                      else{
-                        navigation.navigate('RockolasFavoritos');
-                        navigation.navigate('ListasFavoritos');                        
-                      }
-                    }
-                    ).catch(error => console.log("Error", error));
-                  }
-                  ).catch(error => console.log("Error", error));
+            fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/listas/'+lista.idLista+'/', 
+            {
+              method: 'DELETE',
+              headers: {
+                'Content-Type':'application/json',  
+                'Authorization':'Token '+token
+              }
+            })
+            .then(response => {
+              if (response.ok) {
+                return response;
+              }
+              else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
                 }
+            },
+            error => {
+                    throw error;
+            })
+            .then(response => response.json() )
+            .then(response => {
+              console.log("response ",response);
+              if(view == "Lobby"){
+                navigation.navigate('Rockolas');
+                navigation.navigate('Lobby');
+              }
+              else{
+                navigation.navigate('RockolasFavoritos');
+                navigation.navigate('ListasFavoritos');                                
+              }
+            }
+            ).catch(error => console.log("Error", error));
+          
+          }
                 else{
-                  var listaids = [];
-                  fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                          .then(response => {
-                            if (response.ok) {
-                              return response;
-                            }
-                            else {
-                              var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                              error.response = response;
-                              throw error;
-                              }
-                          },
-                          error => {
-                                  throw error;
-                          })
-                          .then(response => response.json() )
-                          .then(response => {
-                            for(let i = 0; i < response.fav_rockolas.length; i++){
-                              listaids = [...listaids, response.fav_rockolas[i].idRockola]
-                            }
-                          })
-                          .then(response => {
-                            console.log("response ",response);
-                            var petition = '{"fav_rockolas":['
-                            var count = 0;
-                            for(let i = 0; i < listaids.length; i++){
-                              if(listaids[i] != lista.idRockola){
-                                petition = petition + listaids[i]+', '
-                                count = count + 1;
-                              }
-                            }
-                            if(count > 0)
-                              petition = petition.slice(0,-2);
-                            petition = petition + ']}'
-                            console.log("petition:", petition)
-                            fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+                  
+                            fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/rockolas/'+lista.idRockola+'/', 
                             {
-                              method: 'PATCH',
+                              method: 'DELETE',
                               headers: {
                                 'Content-Type':'application/json',  
                                 'Authorization':'Token '+token
-                              },
-                              body: petition
+                              }
                             })
                             .then(response => {
                               if (response.ok) {
@@ -273,8 +262,6 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                               }
                             }
                             ).catch(error => console.log("Error", error));
-                          }
-                          ).catch(error => console.log("Error", error));
                 }
         }}> 
         <Icon
@@ -288,44 +275,14 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
         {
           if(view == "Lobby")
           {
-          var listaids = [];
-          fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                  .then(response => {
-                    if (response.ok) {
-                      return response;
-                    }
-                    else {
-                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                      error.response = response;
-                      throw error;
-                      }
-                  },
-                  error => {
-                          throw error;
-                  })
-                  .then(response => response.json() )
-                  .then(response => {
-                    for(let i = 0; i < response.fav_listas.length; i++){
-                      listaids = [...listaids, response.fav_listas[i].idLista]
-                    }
-                  })
-                  .then(response => {
-                    console.log("response ",response);
-                    var petition = '{"fav_listas":['
-                    for(let i = 0; i < listaids.length; i++){
-                      petition = petition + listaids[i]+', '
-                    }
-                    petition = petition + lista.idLista
-                    petition = petition + ']}'
-                    console.log("petition:",petition)
-                    fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+          
+                    fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/listas/'+lista.idLista+'/', 
                     {
-                      method: 'PATCH',
+                      method: 'POST',
                       headers: {
                         'Content-Type':'application/json',  
                         'Authorization':'Token '+token
-                      },
-                      body: petition
+                      }
                     })
                     .then(response => {
                       if (response.ok) {
@@ -347,48 +304,16 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                       navigation.navigate('Lobby');
                     }
                     ).catch(error => console.log("Error", error));
-                  }
-                  ).catch(error => console.log("Error", error));
                 }
               else{
-                var listaids = [];
-                fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                  .then(response => {
-                    if (response.ok) {
-                      return response;
-                    }
-                    else {
-                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                      error.response = response;
-                      throw error;
-                      }
-                  },
-                  error => {
-                          throw error;
-                  })
-                  .then(response => response.json() )
-                  .then(response => {
-                    for(let i = 0; i < response.fav_rockolas.length; i++){
-                      listaids = [...listaids, response.fav_rockolas[i].idRockola]
-                    }
-                  })
-                  .then(response => {
-                    console.log("response ",response);
-                    var petition = '{"fav_rockolas":['
-                    for(let i = 0; i < listaids.length; i++){
-                      petition = petition + listaids[i]+', '
-                    }
-                    petition = petition + lista.idRockola
-                    petition = petition + ']}'
-                    console.log("petition:",petition)
-                    fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+                
+                    fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/rockolas/'+lista.idRockola+'/', 
                     {
-                      method: 'PATCH',
+                      method: 'POST',
                       headers: {
                         'Content-Type':'application/json',  
                         'Authorization':'Token '+token
-                      },
-                      body: petition
+                      }
                     })
                     .then(response => {
                       if (response.ok) {
@@ -410,8 +335,6 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                       navigation.navigate('Rockolas');
                     }
                     ).catch(error => console.log("Error", error));
-                  }
-                  ).catch(error => console.log("Error", error));
 
               }
         }}>
@@ -426,49 +349,14 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
         <TouchableOpacity onPress={() => 
         {
           if(view == "Lobby" || view == "ListasFavoritos"){
-          var listaids = [];
-          fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                  .then(response => {
-                    if (response.ok) {
-                      return response;
-                    }
-                    else {
-                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                      error.response = response;
-                      throw error;
-                      }
-                  },
-                  error => {
-                          throw error;
-                  })
-                  .then(response => response.json() )
-                  .then(response => {
-                    for(let i = 0; i < response.fav_listas.length; i++){
-                      listaids = [...listaids, response.fav_listas[i].idLista]
-                    }
-                  })
-                  .then(response => {
-                    console.log("response ",response);
-                    var petition = '{"fav_listas":['
-                    var count = 0
-                    for(let i = 0; i < listaids.length; i++){
-                      if(listaids[i] != lista.idLista){
-                        petition = petition + listaids[i]+', '
-                        count = count + 1
-                      }
-                    }
-                    if(count > 0)
-                      petition = petition.slice(0,-2);
-                    petition = petition + ']}'
-                    console.log("Petition ", petition)
-                    fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+          
+                    fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/listas/'+lista.idLista+'/', 
                     {
-                      method: 'PATCH',
+                      method: 'DELETE',
                       headers: {
                         'Content-Type':'application/json',  
                         'Authorization':'Token '+token
-                      },
-                      body: petition
+                      }
                     })
                     .then(response => {
                       if (response.ok) {
@@ -496,53 +384,16 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                       }
                     }
                     ).catch(error => console.log("Error", error));
-                  }
-                  ).catch(error => console.log("Error", error));
                 }
                 else{
-                  var listaids = [];
-                  fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                          .then(response => {
-                            if (response.ok) {
-                              return response;
-                            }
-                            else {
-                              var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                              error.response = response;
-                              throw error;
-                              }
-                          },
-                          error => {
-                                  throw error;
-                          })
-                          .then(response => response.json() )
-                          .then(response => {
-                            for(let i = 0; i < response.fav_rockolas.length; i++){
-                              listaids = [...listaids, response.fav_rockolas[i].idRockola]
-                            }
-                          })
-                          .then(response => {
-                            console.log("response ",response);
-                            var petition = '{"fav_rockolas":['
-                            var count = 0
-                            for(let i = 0; i < listaids.length; i++){
-                              if(listaids[i] != lista.idRockola){
-                                petition = petition + listaids[i]+', '
-                                count = count + 1
-                              }
-                            }
-                            if(count > 0)
-                              petition = petition.slice(0,-2);
-                            petition = petition + ']}'
-                            console.log("petition:", petition)
-                            fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+                  
+                            fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/rockolas/'+lista.idRockola+'/', 
                             {
-                              method: 'PATCH',
+                              method: 'DELETE',
                               headers: {
                                 'Content-Type':'application/json',  
                                 'Authorization':'Token '+token
-                              },
-                              body: petition
+                              }
                             })
                             .then(response => {
                               if (response.ok) {
@@ -570,8 +421,6 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                               }
                             }
                             ).catch(error => console.log("Error", error));
-                          }
-                          ).catch(error => console.log("Error", error));
                 }
         }}> 
         <Icon
@@ -585,44 +434,14 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
         {
           if(view == "Lobby")
           {
-          var listaids = [];
-          fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                  .then(response => {
-                    if (response.ok) {
-                      return response;
-                    }
-                    else {
-                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                      error.response = response;
-                      throw error;
-                      }
-                  },
-                  error => {
-                          throw error;
-                  })
-                  .then(response => response.json() )
-                  .then(response => {
-                    for(let i = 0; i < response.fav_listas.length; i++){
-                      listaids = [...listaids, response.fav_listas[i].idLista]
-                    }
-                  })
-                  .then(response => {
-                    console.log("response ",response);
-                    var petition = '{"fav_listas":['
-                    for(let i = 0; i < listaids.length; i++){
-                      petition = petition + listaids[i]+', '
-                    }
-                    petition = petition + lista.idLista
-                    petition = petition + ']}'
-                    console.log("petition:",petition)
-                    fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+          
+                    fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/listas/'+lista.idLista+'/', 
                     {
-                      method: 'PATCH',
+                      method: 'POST',
                       headers: {
                         'Content-Type':'application/json',  
                         'Authorization':'Token '+token
-                      },
-                      body: petition
+                      }
                     })
                     .then(response => {
                       if (response.ok) {
@@ -644,48 +463,16 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                       navigation.navigate('Lobby');
                     }
                     ).catch(error => console.log("Error", error));
-                  }
-                  ).catch(error => console.log("Error", error));
                 }
                 else{
-                  var listaids = [];
-                  fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/')
-                    .then(response => {
-                      if (response.ok) {
-                        return response;
-                      }
-                      else {
-                        var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                        error.response = response;
-                        throw error;
-                        }
-                    },
-                    error => {
-                            throw error;
-                    })
-                    .then(response => response.json() )
-                    .then(response => {
-                      for(let i = 0; i < response.fav_rockolas.length; i++){
-                        listaids = [...listaids, response.fav_rockolas[i].idRockola]
-                      }
-                    })
-                    .then(response => {
-                      console.log("response ",response);
-                      var petition = '{"fav_rockolas":['
-                      for(let i = 0; i < listaids.length; i++){
-                        petition = petition + listaids[i]+', '
-                      }
-                      petition = petition + lista.idRockola
-                      petition = petition + ']}'
-                      console.log("petition:",petition)
-                      fetch('https://musicboss-app.herokuapp.com/api/usuario/info/'+uid+'/', 
+                  
+                      fetch('https://musicboss-app.herokuapp.com/api/usuario/'+uid+'/fav/rockolas/'+lista.idRockola+'/', 
                       {
-                        method: 'PATCH',
+                        method: 'POST',
                         headers: {
                           'Content-Type':'application/json',  
                           'Authorization':'Token '+token
-                        },
-                        body: petition
+                        }
                       })
                       .then(response => {
                         if (response.ok) {
@@ -707,8 +494,6 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                         navigation.navigate('Rockolas');
                       }
                       ).catch(error => console.log("Error", error));
-                    }
-                    ).catch(error => console.log("Error", error));
   
                 }
         }}>
@@ -723,7 +508,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       <OptionsMenu
         customButton={myIcon}
         destructiveIndex={1}
-        options={["Editar","Borrar"]}
+        options={["Editar", "Borrar", "Cancelar"]}
         actions={[editPost, deleteList]}/>}  />
    
     <Card.Content style = {{marginBottom: 20}}>

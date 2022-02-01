@@ -44,6 +44,7 @@ class MyRockolas extends Component {
       listas: [],
       listasquery: [],
       listasMarcadas: [],
+      idListas: [],
       nombreNuevaRockola: "",
       userId: null,
       modalShown: false,
@@ -92,10 +93,14 @@ class MyRockolas extends Component {
         listasquery: res,
         loading: false
       });
-      for(let i = 0; i < this.state.listas; i++){
-          listasMarcadas[i] = false;
+      for(let i = 0; i < this.state.listas.length; i++){
+          this.state.listasMarcadas[i] = false;
+          this.state.idListas[i] = this.state.listas[i].idLista
       }
       console.log("res json: " +res);
+      console.log("Listas Marcadas:", this.state.listasMarcadas)
+      console.log("res json: " +res);
+      console.log("Listas IDS:", this.state.idListas)
     });
 
     this.state.userId = this.props.uid;
@@ -181,7 +186,7 @@ class MyRockolas extends Component {
             onChangeText={text => this.state.nombreNuevaRockola= text}/>
             </View>
             {this.state.imagenMarcada == ""? 
-            <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la lista</Text>
+            <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la Rockola.</Text>
             :
             <Image source={{uri: 'https://img.youtube.com/vi/'+this.state.imagenMarcada+'/hqdefault.jpg'}} style={{width:120, height:120, marginLeft:130}} />
             }            
@@ -213,8 +218,8 @@ class MyRockolas extends Component {
                   if(item.cover != ""){
                     this.state.imagenMarcada = item.cover
                   }; this.forceUpdate();}}><Image source={item.cover == "" ? { uri: 'https://picsum.photos/id/145/500' } : {uri: 'https://img.youtube.com/vi/'+item.cover+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcada == item.cover ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
-                    onPress={() => {this.state.listasMarcadas[Number(item.idLista)-1] = !this.state.listasMarcadas[Number(item.idLista)-1]; this.forceUpdate();}}
-                  >{this.state.listasMarcadas[Number(item.idLista)-1] == true? <Icon
+                    onPress={() => {this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)] = !this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)]; this.forceUpdate();}}
+                  >{this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)] == true? <Icon
                     name='check'
                     type='Entypo'
                     /> :<Icon
@@ -243,7 +248,7 @@ class MyRockolas extends Component {
           var petition = '{"nombre":"'+this.state.nombreNuevaRockola+'", "usuario":'+this.state.userId +', "listas":[';
               for(let i = 0; i < this.state.listas.length; i++){
                 if(this.state.listasMarcadas[i]){
-                  var number = i+1;
+                  var number = this.state.idListas[i];
                   var bar = ''+number;
                   if(this.state.count == 0){
                     petition = petition+bar;

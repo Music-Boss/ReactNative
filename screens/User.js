@@ -17,6 +17,8 @@ import { Dimensions } from 'react-native';
 import {connect} from 'react-redux'
 import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import Bottom from "../tabs/Bottom" 
+import { Icon } from 'react-native-elements'
+import OptionsMenu from "react-native-option-menu";
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -27,6 +29,12 @@ const Item = ({ title }) => {
     </View>
   );
 };
+
+const myIcon = (<Icon
+  name='menu'
+  type='Feather'
+  color='#000000'
+/>)
   
 const renderItem = ({ item }) => <Item title={item.title} />;
 class User extends Component {
@@ -48,6 +56,7 @@ class User extends Component {
           apellido: "Apellido",
           amigos: [],
           modalShown: false,
+          modalShown2: false,
           nuevoNombre: "",
           nuevoApellido: "",
           nuevoCorreo: "",
@@ -56,7 +65,9 @@ class User extends Component {
           bio: "",
           nuevoBio: "",
           pais:"",
-          nuevoPais:""
+          nuevoPais:"",
+          solicitudes: [],
+          usereliminated: null
         };
         //this.arrayholder = DATA;
     }
@@ -70,6 +81,11 @@ class User extends Component {
           modalShown: !this.state.modalShown
         });
     }
+    toggleModal2() {
+      this.setState({
+        modalShown2: !this.state.modalShown2
+      });
+  }
 
     getListas = () => {
         this.setState({ loading:true} );
@@ -102,22 +118,34 @@ class User extends Component {
                 }
             }
             console.log("Main User: ", this.state.mainuser.username);
+            fetch('http://musicboss-app.herokuapp.com/api/usuario/info/'+this.props.uid+'/')
+            .then(res => {
+                console.log("res raws: "+res);
+                return res.json()})
+              .then(res => {
+                this.setState({
+                  amigos: res.amigos,
+                  bio: res.bio,
+                  pais: res.pais
+                })
+                console.log("amigos: " +res.amigos);
+                fetch('https://musicboss-app.herokuapp.com/api/solicitudes/')
+                .then(res => {return res.json()})
+                .then(res => {
+                  for(let i = 0; i < res.length; i++){
+                    if(res[i].destinatario.id == this.props.uid){
+                      this.state.solicitudes = [...this.state.solicitudes, res[i]];
+                    }
+                  }
+                  this.setState({
+                    loading: false
+                  });
+                })
+              })
             
         });
 
-        fetch('http://musicboss-app.herokuapp.com/api/usuario/info/'+this.props.uid+'/')
-        .then(res => {
-            console.log("res raws: "+res);
-            return res.json()})
-          .then(res => {
-            this.setState({
-              amigos: res.amigos,
-              bio: res.bio,
-              pais: res.pais,
-              loading: false
-            })
-            console.log("amigos: " +res.amigos);
-          })
+        
     }
 
     render() {
@@ -218,7 +246,7 @@ class User extends Component {
                     transparent= {true}
                     visible={this.state.modalShown}
                     toggle={this.toggleModal}
-                    onRequestClose={() => {console.log("Modal Cerrado..."); Alert.alert("Modal Cerrado.");
+                    onRequestClose={() => {console.log("Modal Cerrado..."); 
                     
                     this.toggleModal();}} 
                 >
@@ -515,7 +543,47 @@ class User extends Component {
                     </View>
                         
                     </View>
-                    </Modal> 
+                    </Modal>
+
+                    <Modal
+                    animationType="slide"
+                    transparent= {true}
+                    visible={this.state.modalShown2}
+                    toggle={this.toggleModal2}
+                    onRequestClose={() => {console.log("Modal 2 Cerrado..."); 
+                    
+                    this.toggleModal2();}} 
+                    >
+                    <View style={{flex:1, backgroundColor:"#000000aa"}}>
+                    <View style={{backgroundColor:"#ffffff", margin:50, padding:40}}>
+                    <Text style={{fontSize:15, marginTop:20}}>Seguro quieres eliminar a {this.state.usereliminated?.username}?</Text>
+                    <View style={{flexDirection:'row'}}>
+                    <TouchableOpacity onPress = {() => { fetch('https://musicboss-app.herokuapp.com/api/usuario/'+this.props.uid+'/amigos/'+this.state.usereliminated.id+'/', {
+                                      method: 'DELETE',
+                                      headers: {
+                                      'Content-Type':'application/json',  
+                                      'Authorization':'Token '+this.state.token
+                                      }
+                                        })
+                                        .then(res => {console.log(res); this.props.navigation.navigate('Lobby'); this.props.navigation.navigate('User'); this.toggleModal2();})}}>
+                        <Icon
+                            name='check'
+                            type='Entypo'
+                         />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{marginLeft: 30}} onPress = {() => {this.toggleModal2();}}>
+                        <Icon
+                            name='close'
+                            type='Evillcons'
+                         />
+                    </TouchableOpacity>
+
+                    </View>
+
+                    </View>
+                    </View>
+                  </Modal> 
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginTop:-250 }} nestedScrollEnabled>
                     <Card style={{marginTop:20}}>
@@ -548,7 +616,98 @@ class User extends Component {
                         </Card.Actions>
                         */}
                     </Card>
-                    <Text style={{fontWeight: 'bold', fontSize:15, marginTop:20}}>Amigos</Text>
+                    <Text style={{fontWeight: 'bold', fontSize:15, marginTop:20}}>Solicitudes</Text>
+                        {
+                        this.state.solicitudes.length == 0 ? 
+                        <Text style={{fontSize:15, marginTop:20}}>No tienes solicitudes pendientes.</Text>
+                        :
+                        <FlatList
+                        scrollEnabled={false}
+                        style={{flex: 0 }} 
+                        data={this.state.solicitudes}
+                        renderItem={
+                          ({item}) => 
+                          <View style={styles.checkboxContainer}>
+                            
+                          
+          
+                          
+                          <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
+                          <Card.Title title={item.remitente.username} left={(props) =><Image source={{uri: 'https://i.imgur.com/3oyxBVT.jpg'}} style={{width:50, height:50}} />} right={(props) => <View style={{flexDirection:'row'}}><TouchableOpacity
+                              onPress={() => {
+                                  fetch('https://musicboss-app.herokuapp.com/api/usuario/'+item.remitente.id+'/solicitud/'+item.destinatario.id+'/aceptar/', {
+                                      method: 'PUT',
+                                      headers: {
+                                      'Content-Type':'application/json',  
+                                      'Authorization':'Token '+this.state.token
+                                      }
+                                  })
+                                  .then(res => {
+                                      console.log("respuesta de solicitud: "+res);
+                                      for(let i = 0; i < this.state.solicitudes.length; i++){
+                                          if(this.state.solicitudes[i].idSolicitud == item.idSolicitud){
+                                              this.state.solicitudes.splice(i,1);
+                                              this.forceUpdate();
+                                              this.props.navigation.navigate('Lobby');
+                                              this.props.navigation.navigate('User');
+                                          }
+                                      }
+                                  })
+                              }}
+                            ><Icon
+                            name='check'
+                            type='Entypo'
+                         />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                              onPress={() => {
+                                  fetch('https://musicboss-app.herokuapp.com/api/usuario/'+item.remitente.id+'/solicitud/'+item.destinatario.id+'/', {
+                                      method: 'DELETE',
+                                      headers: {
+                                      'Content-Type':'application/json',  
+                                      'Authorization':'Token '+this.state.token
+                                      }
+                                  })
+                                  .then(res => {
+                                      console.log("respuesta de solicitud: "+res);
+                                      for(let i = 0; i < this.state.solicitudes.length; i++){
+                                          if(this.state.solicitudes[i].idSolicitud == item.idSolicitud){
+                                              this.state.solicitudes.splice(i,1);
+                                              this.forceUpdate();
+                                          }
+                                      }
+                                  })
+                              }}
+                            ><Icon
+                            name='close'
+                            type='Evillcons'
+                         />
+                          </TouchableOpacity>
+                          </View>
+                          }/>
+                          
+                          
+                          {/*<Card.Actions>
+                          <Button>Cancel</Button>
+                          <Button>Ok</Button>
+                          </Card.Actions>
+                          */}
+                          </Card>
+                          </View>
+                        }     
+                        keyExtractor={(item) => item.idSolicitud}
+                      />
+                  }
+                    <View style={{flexDirection:'row'}}>
+                      <Text style={{fontWeight: 'bold', fontSize:15, marginTop:20}}>Amigos</Text>
+                      <TouchableOpacity style={styles.loginBtn3} onPress={() => this.props.navigation.navigate('AddFriends')}>
+                        <Text style={styles.loginText}>Buscar amigos</Text>
+                    </TouchableOpacity>
+
+                    </View>
+                    {this.state.amigos.length == 0 ? 
+                    <Text style={{ fontSize:15, marginTop:20}}>Todavía no tienes agregado amigos.</Text>
+                    :
                     <FlatList
                         style={{flex:0}} 
                         data={this.state.amigos}
@@ -559,7 +718,7 @@ class User extends Component {
                 
 
                 
-                            <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
+                            <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}} >
                             <Card.Title title={item.username} />
                             
                             
@@ -577,9 +736,14 @@ class User extends Component {
                                     <Text>{item.date_joined}</Text>
                                     <Text style={{fontWeight:'bold'}}>Última conexión</Text>
                                     <Text>{item.last_login}</Text>
+                                    <TouchableOpacity style={styles.loginBtn} onPress={() => {this.state.usereliminated= item; this.toggleModal2();}}>
+                                      <Text style={styles.loginText}>Eliminar</Text>
+
+                                  </TouchableOpacity>
 
                                 </View>
                             </View>
+                           
                         
                         
                             </Card.Content>
@@ -589,6 +753,9 @@ class User extends Component {
                         keyExtractor={(item) => item.id}
                         
                         />
+                      }
+                        
+                      
                 </ScrollView>
                 <View>
                 <Bottom data = {[
@@ -698,6 +865,18 @@ const styles = StyleSheet.create({
     },
     checkboxContainer: {
         marginBottom: 10,
+    },
+    loginBtn3:{
+      width:"50%",
+      backgroundColor:"#912427",
+      borderRadius:40,
+      height:25,
+      alignItems:"center",
+      justifyContent:"center",
+      marginTop:20,
+      marginBottom:10,
+      marginRight:20,
+      marginLeft:50
     },
   });
     
