@@ -35,6 +35,23 @@ const myIcon = (<Icon
   type='Feather'
   color='#000000'
 />)
+
+const getProfilePic = id => {
+  console.log("id: ",id);
+  var uri = "https://randomuser.me/api/portraits/";
+  uri += id%2 == 0 ? "women/": "men/";
+  uri += id%100 +".jpg";
+  return uri;
+}
+
+const getBackgroundPic = id => {
+  console.log("bg pic id: ",id);
+  var uri = "https://picsum.photos/id/"; //237/960/640
+  uri += id%1000 + "/960/640";
+  console.log("final bg uri: "+uri);
+  return uri;
+}
+
   
 const renderItem = ({ item }) => <Item title={item.title} />;
 class User extends Component {
@@ -100,6 +117,8 @@ class User extends Component {
 
         this.state.token=this.props.token;
     
+        
+
         fetch(this.state.url)
         .then(res => {
           console.log("res raws: "+res);
@@ -118,6 +137,8 @@ class User extends Component {
                 }
             }
             console.log("Main User: ", this.state.mainuser.username);
+            console.log("Main User id: ", this.state.mainuser.id);
+            
             fetch('http://musicboss-app.herokuapp.com/api/usuario/info/'+this.props.uid+'/')
             .then(res => {
                 console.log("res raws: "+res);
@@ -158,15 +179,15 @@ class User extends Component {
         }
 
         return (
-            <View style={{flex:1}}>
-                 <View style={{flex:1}}>
-                    <View style={{
-                        marginBottom: 25,
+            <View style={{flex:1,  flexDirection: 'column'}}>
+                <View style={{height:280}}>
+                  <View style={{
+                        marginBottom: 10,
                         position: 'relative',
                     }}>
                     <ImageBackground
                         source={{
-                        uri: 'https://i.imgur.com/FrRne0I.jpg',
+                        uri: getBackgroundPic(this.state.mainuser.id),
                         }}
                         style={{
                             height: Dimensions.get('window').width * (3/8),
@@ -200,10 +221,11 @@ class User extends Component {
                         
                         </View>
                     </ImageBackground>
-                    </View>
+                  </View>
                     <View style={{
                         bottom: 0,
                         left: 10,
+                        paddingBottom:0,
                         flexDirection: 'row'
                     }}>
                     <View>
@@ -230,7 +252,7 @@ class User extends Component {
                     </View>
                     <Image
                         source={{
-                        uri: 'https://i.imgur.com/3oyxBVT.jpg',
+                        uri: getProfilePic(this.state.mainuser.id),//'https://i.imgur.com/3oyxBVT.jpg',
                         }}
                         style={{borderColor: '#FFF',
                         borderRadius: 55,
@@ -248,8 +270,8 @@ class User extends Component {
                     toggle={this.toggleModal}
                     onRequestClose={() => {console.log("Modal Cerrado..."); 
                     
-                    this.toggleModal();}} 
-                >
+                    this.toggleModal();}}>
+                      
                     <View style={{flex:1, backgroundColor:"#000000aa"}}>
                     <View style={{backgroundColor:"#ffffff", margin:50, padding:40}}>
                     <View style={{flexDirection:'row'}}>
@@ -585,7 +607,7 @@ class User extends Component {
                     </View>
                   </Modal> 
                 </View>
-                <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginTop:-250 }} nestedScrollEnabled>
+                <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1}} nestedScrollEnabled>
                     <Card style={{marginTop:20}}>
                         <Card.Title title="Información Personal" 
                         right={(props) => 
@@ -616,10 +638,10 @@ class User extends Component {
                         </Card.Actions>
                         */}
                     </Card>
-                    <Text style={{fontWeight: 'bold', fontSize:15, marginTop:20}}>Solicitudes</Text>
+                    <Text style={{fontWeight: 'bold', fontSize:15, marginLeft:10, marginTop:20, marginBottom:20}}>Solicitudes</Text>
                         {
                         this.state.solicitudes.length == 0 ? 
-                        <Text style={{fontSize:15, marginTop:20}}>No tienes solicitudes pendientes.</Text>
+                        <Text style={{fontSize:15, marginLeft:10, marginTop:20}}>No tienes solicitudes pendientes.</Text>
                         :
                         <FlatList
                         scrollEnabled={false}
@@ -633,7 +655,7 @@ class User extends Component {
           
                           
                           <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
-                          <Card.Title title={item.remitente.username} left={(props) =><Image source={{uri: 'https://i.imgur.com/3oyxBVT.jpg'}} style={{width:50, height:50}} />} right={(props) => <View style={{flexDirection:'row'}}><TouchableOpacity
+                          <Card.Title title={item.remitente.username} left={(props) =><Image source={{uri: getProfilePic(item.remitente.id) /* 'https://i.imgur.com/3oyxBVT.jpg'*/}} style={{width:50, height:50}} />} right={(props) => <View style={{flexDirection:'row'}}><TouchableOpacity
                               onPress={() => {
                                   fetch('https://musicboss-app.herokuapp.com/api/usuario/'+item.remitente.id+'/solicitud/'+item.destinatario.id+'/aceptar/', {
                                       method: 'PUT',
@@ -699,14 +721,14 @@ class User extends Component {
                       />
                   }
                     <View style={{flexDirection:'row'}}>
-                      <Text style={{fontWeight: 'bold', fontSize:15, marginTop:20}}>Amigos</Text>
+                      <Text style={{fontWeight: 'bold', fontSize:15, marginLeft:10, marginTop:20}}>Amigos</Text>
                       <TouchableOpacity style={styles.loginBtn3} onPress={() => this.props.navigation.navigate('AddFriends')}>
                         <Text style={styles.loginText}>Buscar amigos</Text>
                     </TouchableOpacity>
 
                     </View>
                     {this.state.amigos.length == 0 ? 
-                    <Text style={{ fontSize:15, marginTop:20}}>Todavía no tienes agregado amigos.</Text>
+                    <Text style={{ fontSize:15, marginLeft:10, marginTop:20}}>Todavía no tienes agregado amigos.</Text>
                     :
                     <FlatList
                         style={{flex:0}} 
@@ -730,13 +752,13 @@ class User extends Component {
                             <Card.Content>
                             <View style={{flexDirection: 'row'}}>
                         
-                                <Image source={{uri: 'https://i.imgur.com/3oyxBVT.jpg'}} style={{width:100, height:100}} />
+                                <Image source={{uri: getProfilePic(item.id) /*'https://i.imgur.com/3oyxBVT.jpg'*/}} style={{width:100, height:100}} />
                                 <View>
-                                    <Text style={{fontWeight:'bold'}}>Fecha que se unió</Text>
-                                    <Text>{item.date_joined}</Text>
-                                    <Text style={{fontWeight:'bold'}}>Última conexión</Text>
-                                    <Text>{item.last_login}</Text>
-                                    <TouchableOpacity style={styles.loginBtn} onPress={() => {this.state.usereliminated= item; this.toggleModal2();}}>
+                                    <Text style={{fontWeight:'bold', marginLeft:10}}>Fecha que se unió</Text>
+                                    <Text style={{marginLeft:10}}>{item.date_joined}</Text>
+                                    <Text style={{fontWeight:'bold', marginLeft:10}}>Última conexión</Text>
+                                    <Text style={{marginLeft:10}}>{item.last_login}</Text>
+                                    <TouchableOpacity style={styles.loginBtn3} onPress={() => {this.state.usereliminated= item; this.toggleModal2();}}>
                                       <Text style={styles.loginText}>Eliminar</Text>
 
                                   </TouchableOpacity>
@@ -847,7 +869,8 @@ const styles = StyleSheet.create({
       justifyContent:"center",
       marginTop:20,
       marginBottom:10,
-      marginRight:20
+      marginRight:30,
+      marginLeft:-10,
     },
     loginBtn2:{
       width:"80%",
@@ -867,7 +890,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     loginBtn3:{
-      width:"50%",
+      width:"40%",
       backgroundColor:"#912427",
       borderRadius:40,
       height:25,
@@ -876,7 +899,7 @@ const styles = StyleSheet.create({
       marginTop:20,
       marginBottom:10,
       marginRight:20,
-      marginLeft:50
+      marginLeft:20
     },
   });
     

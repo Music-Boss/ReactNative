@@ -16,8 +16,15 @@ import { Icon } from 'react-native-elements'
 
 const windowWidth = Dimensions.get('window').width;
 
-class AddFriends extends Component {
+const getProfilePic = id => {
+  console.log("Candidatos id: ",id);
+  var uri = "https://randomuser.me/api/portraits/";
+  uri += id%2 == 0 ? "women/": "men/";
+  uri += id%100 +".jpg";
+  return uri;
+}
 
+class AddFriends extends Component {
     constructor(props) {
         super(props);
         /*var DATA;
@@ -187,7 +194,7 @@ class AddFriends extends Component {
     
                     
                     <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
-                    <Card.Title title={item.username} left={(props) =><Image source={{uri: 'https://i.imgur.com/3oyxBVT.jpg'}} style={{width:50, height:50}} />} right={(props) => <TouchableOpacity
+                    <Card.Title title={item.username} left={(props) =><Image source={{uri: getProfilePic(item.id)}} style={{width:50, height:50}} />} right={(props) => <TouchableOpacity
                         onPress={() => {
                             fetch('https://musicboss-app.herokuapp.com/api/usuario/'+this.state.uid+'/solicitud/'+item.id+'/', {
                                 method: 'POST',
@@ -230,31 +237,33 @@ class AddFriends extends Component {
 
               <View>
                 <Bottom data = {[
-                      {
-                          id: "0",
-                          title: "Explorar",
-                          image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
-                          screen: "Lobby"
-                      },
-                      {
-                          id:"1",
-                          title:"Mis Listas",
-                          image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
-                          screen: "MyLists", // Change in future....
-                      },
-                      {
-                        id:"2",
-                        title:"Favoritos",
-                        image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
-                        screen: "ListasFavoritos", // Change in future....
-                      },
-                      {
-                        id:"3",
-                        title:"Perfil",
-                        image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
-                        screen: "User", // Change in future....
-                      },
-                      ]}/>
+            {
+                id: "0",
+                title: "Explorar",
+                image: "https://img.icons8.com/ios-glyphs/60/ffffff/news.png",
+                screen: "Lobby",
+                
+            },
+            {
+                id:"1",
+                title:"Mis Listas",
+                image: "https://img.icons8.com/ios-glyphs/60/ffffff/playlist--v1.png",
+                screen: "MyLists", // Change in future....
+            },
+            {
+              id:"2",
+              title:"Favoritos",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/online-shop-favorite.png",
+              screen: "ListasFavoritos", // Change in future....
+            },
+            {
+              id:"3",
+              title:"Perfil",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/guest-male.png",
+              screen: "User", // Change in future....
+              disabled: "true",
+            },
+             ]}/>
               </View>
 
               

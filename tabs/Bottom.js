@@ -20,7 +20,7 @@ const Bottom = ({data}) => {
         renderItem={({item}) => (
             <TouchableOpacity
                 onPress={() => navigation.navigate(item.screen)}
-                disabled={item.disabled}
+                //disabled={item.disabled}
                 style={[{width : windowWidth/4,  
                 alignItems:"center",
                 justifyContent:"center"}, item.disabled ? {backgroundColor:"#BA3437"} : {backgroundColor:"#912427"}]}
