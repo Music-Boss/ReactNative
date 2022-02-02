@@ -23,21 +23,24 @@ const Bottom = ({data}) => {
                 disabled={item.disabled}
                 style={[{width : windowWidth/4,  
                 alignItems:"center",
-                justifyContent:"center"}, item.disabled ? {backgroundColor:"#FF0606"} : {backgroundColor:"#912427"}]}
+                justifyContent:"center"}, item.disabled ? {backgroundColor:"#BA3437"} : {backgroundColor:"#912427"}]}
             >
-                <View style={{flexDirection:'row'}}>
+                <View style={{ height:50, flexDirection:'column', alignItems:"center", margin:5}}>
                     <Image
                     style = {{
-                        width: 50,
-                        height: 50,
+                        width: 30,
+                        height: 30,
                         resizeMode: "contain",
                     }}
                     source={{
                         uri: item.image
                     }} 
                     />
-                    <Text style={{color:"white"}}>{item.title}</Text>
+                    <View style={{flex: 1}}>
+                    <Text style={{ color:"white"}}>{item.title}</Text>
+                    </View>
                 </View>
+                
             </TouchableOpacity>
         )}
         />

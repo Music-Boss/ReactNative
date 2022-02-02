@@ -200,14 +200,14 @@ class MyLists extends Component {
         {
             id: "0",
             title: "Mis Listas",
-            image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
+            image: "https://img.icons8.com/ios-glyphs/30/ffffff/musical-notes.png",
             screen: "MyLists",
             disabled: "true"
         },
         {
             id:"1",
             title:"Mis Rockolas",
-            image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+            image: "https://img.icons8.com/ios-glyphs/30/ffffff/jukebox.png",
             screen: "MyRockolas", // Change in future....
         }
     ]}/> 
@@ -394,26 +394,27 @@ class MyLists extends Component {
             {
                 id: "0",
                 title: "Explorar",
-                image: "https://img.icons8.com/ios-glyphs/30/000000/musical-notes.png",
-                screen: "Lobby"
+                image: "https://img.icons8.com/ios-glyphs/60/ffffff/news.png",
+                screen: "Lobby",
+                
             },
             {
                 id:"1",
                 title:"Mis Listas",
-                image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+                image: "https://img.icons8.com/ios-glyphs/60/ffffff/playlist--v1.png",
                 screen: "MyLists", // Change in future....
                 disabled: "true"
             },
             {
               id:"2",
               title:"Favoritos",
-              image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/online-shop-favorite.png",
               screen: "ListasFavoritos", // Change in future....
             },
             {
               id:"3",
               title:"Perfil",
-              image: "https://img.icons8.com/ios-glyphs/30/000000/jukebox.png",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/guest-male.png",
               screen: "User", // Change in future....
             },
              ]}/>

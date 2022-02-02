@@ -21,15 +21,15 @@ const Tabs = ({data}) => {
             <TouchableOpacity
                 onPress={() => navigation.navigate(item.screen)}
                 disabled={item.disabled}
-                style={[{width : windowWidth/2, backgroundColor:"#912427", 
+                style={[{width : windowWidth/2, backgroundColor: "#912427", 
                 alignItems:"center",
-                justifyContent:"center"}, item.disabled ? {backgroundColor:"#FF0606"} : {backgroundColor:"#912427"}]}
+                justifyContent:"center"}, item.disabled ? {backgroundColor:"#BA3437"} : {backgroundColor:"#912427"}]}
             >
-                <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection:'column', alignItems:"center", margin:5}}>
                     <Image
                     style = {{
-                        width: 50,
-                        height: 50,
+                        width: 20,
+                        height: 20,
                         resizeMode: "contain",
                     }}
                     source={{

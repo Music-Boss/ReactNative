@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
+import { DefaultTheme, Provider as PaperProvider, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import OptionsMenu from "react-native-option-menu";
 import { useNavigation } from '@react-navigation/native';
 import SongsPage from './SongsPage'
@@ -12,7 +12,19 @@ import {selectUsername, selectToken, selectUserId} from '../slices/navSlice'
 import { useSelector } from 'react-redux';
 
 
-const LeftContent = props => <Avatar.Icon {...props} icon="playlist-play" />
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#912427', 
+    accent: '#FF0606',
+  },
+};
+
+var LeftContentLista = props => <Avatar.Icon {...props} theme={theme} icon="playlist-play"/> 
+
+var LeftContentRockola = props => <Avatar.Icon {...props} theme={theme} icon="radio-tower"/> 
 
 const myIcon = (<Icon
   name='menu'
@@ -43,10 +55,12 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
     if(view == "Lobby"){
       id = lista.idLista
       page = 'listas'
+      
     }
     else{
       id = lista.idRockola
       page = 'rockolas'
+      LeftContent.icon = "radio-tower";
     }
     fetch('https://musicboss-app.herokuapp.com/api/'+page+'/'+id+'/', 
     {
@@ -178,7 +192,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   return(
 
   <Card>
-    <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={LeftContent} right={(props) => 
+    <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={view == "Rockola" || view == "RockolasFavoritos" ? LeftContentRockola : LeftContentLista } right={(props) => 
       favorito == true ?
         lista.usuario != null ?
         lista.usuario.id == uid ?
