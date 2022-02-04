@@ -23,7 +23,7 @@ const Bottom = ({data}) => {
                 //disabled={item.disabled}
                 style={[{width : windowWidth/4,  
                 alignItems:"center",
-                justifyContent:"center"}, item.disabled ? {backgroundColor:"#BA3437"} : {backgroundColor:"#912427"}]}
+                justifyContent:"center"}, item.disabled == "true" ? {backgroundColor:"#BA3437"} : {backgroundColor:"#912427"}]}
             >
                 <View style={{ height:50, flexDirection:'column', alignItems:"center", margin:5}}>
                     <Image

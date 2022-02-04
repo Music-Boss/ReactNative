@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import SongsPage from './SongsPage'
 import ListofListsfromRockola from './ListofListsfromRockola'
 import { Icon } from 'react-native-elements'
-import {setSongs, setNList, setLists, setEditList, setSongsList} from '../slices/navSlice'
+import {setSongs, setNList, setLists, setEditList, setSongsList, setView} from '../slices/navSlice'
 import { useDispatch } from 'react-redux';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import {selectUsername, selectToken, selectUserId} from '../slices/navSlice'
@@ -125,7 +125,8 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       dispatch(setLists(listas));
       const ln = lista;
       dispatch(setNList(ln));
-      navigation.navigate('ListofListsfromRockola');
+      dispatch(setView(view));
+      navigation.navigate('ListofListsfromRockola',);
     }
   }
 
@@ -192,7 +193,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   return(
 
   <Card>
-    <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={view == "Rockola" || view == "RockolasFavoritos" ? LeftContentRockola : LeftContentLista } right={(props) => 
+    <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={view == "Rockola" || view=="MyRockola" || view == "RockolasFavoritos" ? LeftContentRockola : LeftContentLista } right={(props) => 
       favorito == true ?
         lista.usuario != null ?
         lista.usuario.id == uid ?

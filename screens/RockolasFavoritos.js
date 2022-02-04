@@ -215,7 +215,7 @@ componentWillUnmount(){
             {
               id:"3",
               title:"Perfil",
-              image: "https://img.icons8.com/ios-glyphs/60/ffffff/guest-male.png",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/arms-up.png",
               screen: "User", // Change in future....
             },
              ]}/>

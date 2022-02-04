@@ -4967,10 +4967,10 @@
     "normalize-css-color" "^1.0.2"
     "prop-types" "^15.6.0"
 
-"react-native-webview@^11.17.1", "react-native-webview@>=7.0.0":
-  "integrity" "sha512-gGdBavATj8Mya2VYZtWtB9cgOAgVJJGlgL5mo/EO8quBeI5L3IBy2ZQolsCyRRGFTUPCc3Ah0OwJal0PjijGqw=="
-  "resolved" "https://registry.npmjs.org/react-native-webview/-/react-native-webview-11.17.1.tgz"
-  "version" "11.17.1"
+"react-native-webview@>=7.0.0", "react-native-webview@11.13.0":
+  "integrity" "sha512-jjQAKWv8JzRmcn76fMe4lXD84AAeR7kn43kAmUe1GX312BMLaP+RbKlgpYAlNuOBXL0YirItGKDrpaD0bNROOA=="
+  "resolved" "https://registry.npmjs.org/react-native-webview/-/react-native-webview-11.13.0.tgz"
+  "version" "11.13.0"
   dependencies:
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { FlatList, StyleSheet, Text, View, Dimensions, Image, Button, TouchableOpacity, Alert } from 'react-native'
+import { FlatList, StyleSheet, Text, View, Dimensions, Image, Button, TouchableOpacity, Alert, Pressable } from 'react-native'
 import Carousel from 'react-native-snap-carousel'
 import { ScrollView } from "react-native-gesture-handler";
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
@@ -11,8 +11,9 @@ import YoutubePlayer from 'react-native-youtube-iframe'
 
 const windowWidth = Dimensions.get('window').width;
 
-
-
+function DetailsScreen({ route, navigation }) {
+  /* 2. Get the param */
+}
 
 class ListofListsfromRockola extends Component {
 
@@ -24,7 +25,10 @@ class ListofListsfromRockola extends Component {
         console.log(DATA);
         DATA = response.data;
       }
-    );*/
+    );*/    
+
+    console.log("props-list:", this.props.view);
+
     this.state = {
       loading: true,
       lista: null,
@@ -51,20 +55,19 @@ class ListofListsfromRockola extends Component {
 
   renderItem = ({item}) => {
     return (
-      <Card style={{width : windowWidth, marginTop: 20}}>
+      <Card style={{width : windowWidth/2, alignSelf:"center", marginTop: 10}}>
           <Card.Title title={item.nombre} subtitle={item.artista} />
           <Card.Content>
-          <Paragraph></Paragraph>
           
           </Card.Content>
-            <Card.Cover source={{ uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} />
+            <Card.Cover style={{margin:0}}source={{ uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} />
           {/*<Card.Actions>
           <Button>Cancel</Button>
           <Button>Ok</Button>
           </Card.Actions>
           */}
           <TouchableOpacity
-            style={styles.loginBtn}
+            style={this.state.idcanciones.indexOf(item.idCancion) > -1 ? styles.loginBtnDisabled : styles.loginBtn }
             disabled = {this.state.idcanciones.indexOf(item.idCancion) > -1 ? true : false}
                           onPress={() => {
                                 fetch('https://musicboss-app.herokuapp.com/api/rockola/'+this.state.rockola.idRockola+'/canciones/add/'+item.idCancion+'/', 
@@ -93,6 +96,7 @@ class ListofListsfromRockola extends Component {
                                       else {
                                         var error = new Error('Error ' + response.status + ': ' + response.statusText);
                                         error.response = response;
+                                        Alert.alert("Rockola No Pudo Ser Editada");
                                         throw error;
                                         }
                                     },
@@ -126,7 +130,17 @@ class ListofListsfromRockola extends Component {
                             
                           }}
                         >
-                          <Text style={styles.loginText}>Agregar a lista de reproducción.</Text>
+                        {this.state.idcanciones.indexOf(item.idCancion) > -1 ?
+                          <Text style={styles.loginText}>Agregada</Text>
+                        :
+                        
+                        <>
+                        <Text style={styles.loginText}>Agregar a lista de</Text>
+                        <Text style={styles.loginText}>reproducción</Text>
+                        </>
+
+                        }
+                          
                       </TouchableOpacity>
       </Card>
     )
@@ -145,54 +159,54 @@ class ListofListsfromRockola extends Component {
     }
 
     return (
-      <View style={{flex:1}}>
-      <View>
-      <Text style= {{textAlign : "center", fontSize:20, marginTop:25}}>
+      <View style={{flex:1, flexDirection:"column"}}>
+      <Text style= {{textAlign : "center", fontWeight:"bold", fontSize:25, marginTop:30}}>
         {this.state.rockola.nombre}
       </Text>
-      
-      <View style ={{marginTop: 15}}>
-      <Text style= {{textAlign : "center", fontSize:20}}>
-        Lista de canciones de lista {this.state.lista.nombre}.
-      </Text>
+      <ScrollView style={{minHeight:200}} nestedScrollEnabled>
+
+      <View style ={{marginTop: 5}}>
+
+      <FlatList
+            style={{flex:0, height:125}} 
+            data={this.state.rockola.listas}
+            renderItem={
+              ({item}) =>
+              <Pressable style={this.state.lista == item ? styles.listBtnSelected: styles.listBtn }
+              onPress ={() => {this.state.lista = item; this.forceUpdate()}}
+              >
+              <Text style={{alignSelf:"center", fontSize:15, color:"#ffffff"}}>{item.nombre}</Text>
+              </Pressable>
+            }     
+            keyExtractor={(item) => item.idLista}
+            
+          nestedScrollEnabled/>
+      <View style={{minHeight:200}}>
       <Carousel 
         layout={"default"}
         data={this.state.lista.canciones}
         sliderWidth={400}
         itemHeight={700}
-        itemWidth={400}
+        itemWidth={200}
         sliderHeight={700}
         renderItem={this.renderItem}
       />
        
       </View>
+      
 
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginTop:5 }} nestedScrollEnabled>
-        <View style={styles.container}>
+      </View>      
+      </ScrollView>
+
+      <Text style= {{textAlign : "center", fontWeight:"bold", fontSize:20, margin:5}}>
+            Lista de reproducción
+      </Text>
+      
+      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginTop:5, minHeight:160 }} nestedScrollEnabled>
+        <View>
         
         
           
-          <FlatList
-            style={{flex:0}} 
-            data={this.state.rockola.listas}
-            renderItem={
-              ({item}) =>
-              <Button
-              title = {item.nombre}
-              onPress ={() => {this.state.lista = item; this.forceUpdate()}}
-              disabled = {this.state.lista == item ? true : false} 
-              />
-            }     
-            keyExtractor={(item) => item.idLista}
-            
-          />
-            
-          
-        
-          <Text style= {{textAlign : "center", fontSize:20}}>
-            Lista de reproducción.
-          </Text>
 
       
 
@@ -295,12 +309,14 @@ class ListofListsfromRockola extends Component {
       </ScrollView>
       <View>
         {
-          this.state.playlist.length == 0 ?
+          this.state.playlist.length == 0 || this.state.loading ?
           <View></View>
           :
         <YoutubePlayer
-        height={2}
+        height={1}
         play={true}
+        //autoplay={true}
+        webViewStyle={ {opacity:0.01} } //Esta linea corrige el error cuando va a otra vista y vuelve a la rockola
         playList={this.state.playlist}
         />
         }
@@ -310,24 +326,26 @@ class ListofListsfromRockola extends Component {
                 title: "Explorar",
                 image: "https://img.icons8.com/ios-glyphs/60/ffffff/news.png",
                 screen: "Lobby",
-                disabled: "true"
+                disabled: this.props.view === "Rockola" ? "true" : "false"
             },
             {
                 id:"1",
                 title:"Mis Listas",
                 image: "https://img.icons8.com/ios-glyphs/60/ffffff/playlist--v1.png",
                 screen: "MyLists", // Change in future....
+                disabled: this.props.view === "MyRockola" ? "true" : "false"
             },
             {
               id:"2",
               title:"Favoritos",
               image: "https://img.icons8.com/ios-glyphs/60/ffffff/online-shop-favorite.png",
               screen: "ListasFavoritos", // Change in future....
+              disabled: this.props.view === "RockolasFavoritos" ? "true" : "false"
             },
             {
               id:"3",
               title:"Perfil",
-              image: "https://img.icons8.com/ios-glyphs/60/ffffff/guest-male.png",
+              image: "https://img.icons8.com/ios-glyphs/60/ffffff/arms-up.png", 
               screen: "User", // Change in future....
             },
              ]}/>
@@ -344,7 +362,8 @@ const mapStateToProps = state => {
       token: state.nav.token,
       currUsername: state.nav.username,
       uid: state.nav.userid,
-      rockola: state.nav.nList
+      rockola: state.nav.nList,
+      view: state.nav.currView
   }
 }
 
@@ -364,16 +383,43 @@ const styles = StyleSheet.create({
   },
   loginBtn:{
     width:"80%",
-    backgroundColor:"#912427",
+    backgroundColor: "#912427",
+    alignSelf:"center",
     borderRadius:25,
     height:50,
     alignItems:"center",
     justifyContent:"center",
-    marginTop:20,
+    marginTop:10,
     marginBottom:10,
-    marginLeft: 30
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  loginBtnDisabled:{
+    width:"80%",
+    backgroundColor: "#787878",
+    alignSelf:"center",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:10,
+    marginBottom:10,
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  listBtn:{ 
+    borderRadius:25, 
+    backgroundColor:"#912427", 
+    padding:5, 
+    marginBottom:5
+  },
+  listBtnSelected:{ 
+    borderRadius:25, 
+    backgroundColor:"#BA3437", 
+    padding:5, 
+    marginBottom:5
   },
   loginText:{
-    color:"white"
+    color:"white",
   }
 });
