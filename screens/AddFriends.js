@@ -47,7 +47,8 @@ class AddFriends extends Component {
           userId: null,
           uid: this.props.uid,
           urlSolicitudes: "https://musicboss-app.herokuapp.com/api/solicitudes/",
-          solicitudes: []
+          solicitudes: [],
+          usertoadd: null
         };
         //this.arrayholder = DATA;
       }
@@ -207,8 +208,12 @@ class AddFriends extends Component {
                                 console.log("respuesta de solicitud: "+res);
                                 for(let i = 0; i < this.state.amigos.length; i++){
                                     if(this.state.amigos[i].id == item.id){
+                                        this.state.usertoadd = this.state.amigos[i];
+                                        console.log("user to add: ", this.state.usertoadd)
                                         this.state.amigos.splice(i,1);
+                                        Alert.alert("Solicitud enviada.")
                                         this.forceUpdate();
+                                        this.props.navigation.navigate('User')
                                     }
                                 }
                             })

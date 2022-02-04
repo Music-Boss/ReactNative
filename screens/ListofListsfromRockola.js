@@ -7,6 +7,7 @@ import {selectLists, setNList} from '../slices/navSlice'
 import { useSelector } from 'react-redux';
 import {connect} from 'react-redux'
 import Bottom from '../tabs/Bottom'
+import YoutubePlayer from 'react-native-youtube-iframe'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -29,7 +30,8 @@ class ListofListsfromRockola extends Component {
       lista: null,
       rockola: this.props.rockola,
       token: this.props.token,
-      idcanciones:[]
+      idcanciones:[],
+      playlist: []
     };
     //this.arrayholder = DATA;
   }
@@ -38,6 +40,7 @@ class ListofListsfromRockola extends Component {
     this.state.lista = this.state.rockola.listas[0];
     for(let i = 0; i < this.state.rockola.canciones.length; i++){
       this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+      this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
     }
     for(let j = 0; j < this.state.lista.canciones.length; j++){
       console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
@@ -244,6 +247,10 @@ class ListofListsfromRockola extends Component {
                                     
                                     this.state.rockola = response;
                                     this.state.lista = this.state.rockola.listas[0];
+                                    for(let i = 0; i < this.state.rockola.canciones.length; i++){
+                                      this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+                                      this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
+                                    }
                                     this.forceUpdate();
                                   })
                                   .catch(error => console.log("Error", error));
@@ -287,6 +294,16 @@ class ListofListsfromRockola extends Component {
         </View>
       </ScrollView>
       <View>
+        {
+          this.state.playlist.length == 0 ?
+          <View></View>
+          :
+        <YoutubePlayer
+        height={2}
+        play={true}
+        playList={this.state.playlist}
+        />
+        }
       <Bottom data = {[
             {
                 id: "0",
