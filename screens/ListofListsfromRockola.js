@@ -261,6 +261,8 @@ class ListofListsfromRockola extends Component {
                                     
                                     this.state.rockola = response;
                                     this.state.lista = this.state.rockola.listas[0];
+                                    this.state.idcanciones = [];
+                                    this.state.playlist = [];
                                     for(let i = 0; i < this.state.rockola.canciones.length; i++){
                                       this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
                                       this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]

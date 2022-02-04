@@ -22,6 +22,8 @@ import OptionsMenu from "react-native-option-menu";
 
 const windowWidth = Dimensions.get('window').width;
 
+const Bold = (props) => <Text style={{fontWeight: 'bold'}}>{props.children}</Text>
+
 const Item = ({ title }) => {
   return (
     <View style={styles.item}>
@@ -272,48 +274,42 @@ class User extends Component {
                     
                     this.toggleModal();}}>
                       
-                    <View style={{flex:1, backgroundColor:"#000000aa"}}>
-                    <View style={{backgroundColor:"#ffffff", margin:50, padding:40}}>
-                    <View style={{flexDirection:'row'}}>
-                        <TextInput  
-                        
-                        placeholder="Nombre..." 
-                        placeholderTextColor="#000"
-                        onChangeText={text => this.state.nuevoNombre= text}/>
-                        <TextInput  
-                        style={{marginLeft:100}}
-                        placeholder="Apellido..." 
-                        placeholderTextColor="#000"
-                        onChangeText={text => this.state.nuevoApellido= text}/>
-                    </View>
-                    <View style={{
-                    borderLeftWidth: 1,
-                    borderRightWidth:1,
-                    borderTopWidth:1,
-                    borderBottomWidth:1,
-                    height: 100
-                    }}>
-                        <TextInput style={{
-                        height: 70,
-                        backgroundColor: '#ffffff',
-                        paddingLeft: 15,
-                        paddingRight: 15
-                        }}
+                    <View style={{flex:1, backgroundColor:"#000000aa"}}>      
+                      <View style={{backgroundColor:"#ffffff", margin:25, paddingHorizontal:30, paddingVertical:10, borderRadius:25,}}>
+                        <Text style={{fontSize:20, fontWeight:"bold", alignSelf:"center", marginBottom: 15}}>Editar Información Personal</Text>
+                        <View style={styles.inputView}>
+                          <TextInput style={styles.inputText}  
+                          placeholder="Nombres..." 
+                          //placeholderTextColor="#000"
+                          onChangeText={text => this.state.nuevoNombre= text}/>    
+                        </View>
+                      
+                        <View style={styles.inputView}>
+                          <TextInput  
+                          style={styles.inputText}
+                          placeholder="Apellidos..." 
+                          onChangeText={text => this.state.nuevoApellido= text}/>
+                        </View>
+          
+                    <View style={{...styles.inputView,...{height: 120}}}>
+                        <TextInput style={{...styles.inputText, ...{height: 100}}}
                         placeholder="Descripción"
-                        placeholderTextColor="#000"
                         onChangeText={text => this.state.nuevoBio = text}
                         multiline={true} />
                         
                     </View>
-                    <TextInput  
-                        style={{marginTop:30}}
-                        placeholder="Correo electrónico..." 
-                        placeholderTextColor="#000"
-                        onChangeText={text => this.state.nuevoCorreo= text}/>
-                        <TextInput  
-                        placeholder="País..." 
-                        placeholderTextColor="#000"
-                        onChangeText={text => this.state.nuevoPais= text}/>
+                    <View style={styles.inputView}>
+                      <TextInput  
+                      style={styles.inputText}
+                      placeholder="Correo electrónico..." 
+                      onChangeText={text => this.state.nuevoCorreo= text}/>
+                    </View>
+                    <View style={styles.inputView}>
+                      <TextInput style={styles.inputText} 
+                      placeholder="País..." 
+                      onChangeText={text => this.state.nuevoPais= text}/>
+                    </View>
+                        
                     <TouchableOpacity style={styles.loginBtn2} onPress={() => {
                       var alert = "";
                       var petition = '{';
@@ -577,9 +573,14 @@ class User extends Component {
                     this.toggleModal2();}} 
                     >
                     <View style={{flex:1, backgroundColor:"#000000aa"}}>
-                    <View style={{backgroundColor:"#ffffff", margin:50, padding:40}}>
-                    <Text style={{fontSize:15, marginTop:20}}>Seguro quieres eliminar a {this.state.usereliminated?.username}?</Text>
-                    <View style={{flexDirection:'row'}}>
+                    <View style={{backgroundColor:"#ffffff", margin:30, padding:20, borderRadius:25}}>
+                    <Image source={{uri: getProfilePic(this.state.usereliminated?.id)}} style={{width:100, height:100, borderRadius:50, alignSelf:"center"}} />
+                    <Text style={{ fontSize:15, marginTop:20, marginBottom:10, alignSelf:"center"}}>
+                      <Text>¿Seguro que quieres eliminar a</Text>
+                      <Text style={{fontWeight:"bold"}}> @{this.state.usereliminated?.username}?</Text>
+                    </Text>
+                    
+                    <View style={{flexDirection:'row', alignSelf:"center", marginTop:10}}>
                     <TouchableOpacity onPress = {() => { fetch('https://musicboss-app.herokuapp.com/api/usuario/'+this.props.uid+'/amigos/'+this.state.usereliminated.id+'/', {
                                       method: 'DELETE',
                                       headers: {
@@ -641,7 +642,7 @@ class User extends Component {
                     <Text style={{fontWeight: 'bold', fontSize:15, marginLeft:10, marginTop:20, marginBottom:20}}>Solicitudes</Text>
                         {
                         this.state.solicitudes.length == 0 ? 
-                        <Text style={{fontSize:15, marginLeft:10, marginTop:20}}>No tienes solicitudes pendientes.</Text>
+                        <Text style={{fontSize:15, marginLeft:10, marginVertical:10}}>No tienes solicitudes pendientes.</Text>
                         :
                         <FlatList
                         scrollEnabled={false}
@@ -654,7 +655,7 @@ class User extends Component {
                           
           
                           
-                          <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
+                          <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5, borderRadius:10}}>
                           <Card.Title title={item.remitente.username} left={(props) =><Image source={{uri: getProfilePic(item.remitente.id) /* 'https://i.imgur.com/3oyxBVT.jpg'*/}} style={{width:50, height:50}} />} right={(props) => <View style={{flexDirection:'row'}}><TouchableOpacity
                               onPress={() => {
                                   fetch('https://musicboss-app.herokuapp.com/api/usuario/'+item.remitente.id+'/solicitud/'+item.destinatario.id+'/aceptar/', {
@@ -676,10 +677,11 @@ class User extends Component {
                                       }
                                   })
                               }}
-                            ><Icon
+                            >
+                          
+                          <Icon 
                             name='check'
-                            type='Entypo'
-                         />
+                            type='Entypo'/>
                           </TouchableOpacity>
                           <TouchableOpacity
                               onPress={() => {
@@ -728,7 +730,7 @@ class User extends Component {
 
                     </View>
                     {this.state.amigos.length == 0 ? 
-                    <Text style={{ fontSize:15, marginLeft:10, marginTop:20}}>Todavía no tienes agregado amigos.</Text>
+                    <Text style={{ fontSize:15, marginLeft:10, marginTop:20}}>Todavía no tienes amigos agregados.</Text>
                     :
                     <FlatList
                         style={{flex:0}} 
@@ -752,7 +754,7 @@ class User extends Component {
                             <Card.Content>
                             <View style={{flexDirection: 'row'}}>
                         
-                                <Image source={{uri: getProfilePic(item.id) /*'https://i.imgur.com/3oyxBVT.jpg'*/}} style={{width:100, height:100}} />
+                                <Image source={{uri: getProfilePic(item.id) /*'https://i.imgur.com/3oyxBVT.jpg'*/}} style={{width:100, height:100, borderRadius:50}} />
                                 <View>
                                     <Text style={{fontWeight:'bold', marginLeft:10}}>Fecha que se unió</Text>
                                     <Text style={{marginLeft:10}}>{item.date_joined}</Text>
@@ -843,22 +845,25 @@ const styles = StyleSheet.create({
       textShadowColor: 'rgba(0, 0, 0, 0.75)',
       textShadowOffset: {width: -2, height: 2},
       textShadowRadius: 5},
-    inputView:{
-      width:"80%",
-      backgroundColor:"#1a2e6e",
-      borderRadius:25,
-      height:50,
-      marginBottom:20,
-      justifyContent:"center",
-      padding:20
-    },
-    inputText:{
-      height:50,
-      color:"white"
-    },
-    forgot:{
+      forgot:{
       color:"black",
       fontSize:11
+    },
+    inputView:{
+      width:"100%",
+      backgroundColor:"#bfceff",
+      borderRadius:25,
+      height:30,
+      marginBottom:10,
+      justifyContent:"center",
+      padding:20,
+      alignSelf:"center"
+    },
+    inputText:{
+      height:30,
+      fontSize:17,
+      color:"black",
+      //fontWeight:"bold"
     },
     loginBtn:{
       width:"100%",
@@ -879,9 +884,8 @@ const styles = StyleSheet.create({
       height:50,
       alignItems:"center",
       justifyContent:"center",
-      marginTop:20,
-      marginBottom:10,
-      marginLeft:20
+      alignSelf:"center",
+      marginTop:5,
     },
     loginText:{
       color:"white"

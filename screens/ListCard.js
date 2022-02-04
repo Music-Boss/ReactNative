@@ -26,13 +26,22 @@ var LeftContentLista = props => <Avatar.Icon {...props} theme={theme} icon="play
 
 var LeftContentRockola = props => <Avatar.Icon {...props} theme={theme} icon="radio-tower"/> 
 
-const myIcon = (<Icon
+var DefaultCoverImage;
+
+const myIcon = (<Icon style={{marginRight:10}}
   name='menu'
   type='Feather'
   color='#000000'
 />)
 
-
+const getDefaultCoverImage = view => {
+  var str;
+  if(view == "Lobby"){
+    return require("../list.jpg");
+  } else {
+    return require("../jukebox.jpg");
+  }
+}
 
 const ListCard = ({lista, view, favorito, esFavorito}) => 
 {
@@ -60,7 +69,6 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
     else{
       id = lista.idRockola
       page = 'rockolas'
-      LeftContent.icon = "radio-tower";
     }
     fetch('https://musicboss-app.herokuapp.com/api/'+page+'/'+id+'/', 
     {
@@ -197,7 +205,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       favorito == true ?
         lista.usuario != null ?
         lista.usuario.id == uid ?
-        <Icon
+        <Icon style={{marginRight:10}}
             name='check'
             type='Entypo'
          /> :
@@ -279,7 +287,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                             ).catch(error => console.log("Error", error));
                 }
         }}> 
-        <Icon
+        <Icon style={{marginRight:10}}
         name='heart'
         type='ant-design'
         color='#000000'
@@ -353,7 +361,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
 
               }
         }}>
-      <Icon
+      <Icon style={{marginRight:10}}
         name='hearto'
         type='ant-design'
         color='#000000'
@@ -438,7 +446,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
                             ).catch(error => console.log("Error", error));
                 }
         }}> 
-        <Icon
+        <Icon style={{marginRight:10}}
         name='heart'
         type='ant-design'
         color='#000000'
@@ -512,7 +520,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   
                 }
         }}>
-      <Icon
+      <Icon style={{marginRight:10}}
         name='hearto'
         type='ant-design'
         color='#000000'
@@ -533,7 +541,9 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       
     </Card.Content>
     <TouchableOpacity onPress={() => goToList()}>
-    <Card.Cover source={[lista.cover == "" ? { uri: 'https://picsum.photos/id/145/500' }:{uri: 'https://img.youtube.com/vi/'+lista.cover+'/hqdefault.jpg'}]} />
+    <Card.Cover source={lista.cover == "" ? getDefaultCoverImage(view): {uri: 'https://img.youtube.com/vi/'+lista.cover+'/hqdefault.jpg'}} /> 
+    
+
     </TouchableOpacity>
     {/*<Card.Actions>
       <Button>Cancel</Button>

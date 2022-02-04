@@ -217,23 +217,26 @@ class MyLists extends Component {
         transparent= {false}
         visible={this.state.modalShown}
         toggle={this.toggleModal}
-        onRequestClose={() => {console.log("Closing Modal..."); Alert.alert("Modal Closed."); this.getListas();
-          
-        this.toggleModal();}} 
+        onRequestClose={() => {
+          console.log("Closing Modal..."); 
+          //Alert.alert("Modal Closed."); 
+          this.getListas();
+          this.toggleModal();
+        }} 
        >
          <View style={{flex:1}}>
            <View>
+            <Text style={{fontSize:20, fontWeight:"bold", alignSelf:"center", marginBottom: 5}}>Crear una Nueva Lista</Text>
            <View style={styles.inputView}>
             <TextInput  
             style={styles.inputText}
-            placeholder="Nombre de La Nueva Lista..." 
-            placeholderTextColor="#ffffff"
+            placeholder="Nombre de La Nueva Lista..."
             onChangeText={text => this.state.nombreNuevaLista= text}/>
             </View>
             {this.state.imagenMarcadas == -1? 
-            <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la lista</Text>
+            <Text style= {{textAlign : "center", fontSize:15, marginBottom:5}}>Seleccione la imagen de una canción para convertirla en la carátula de la lista</Text>
             :
-            <Image source={{uri: 'https://img.youtube.com/vi/'+this.state.canciones[this.state.imagenMarcadas-1].fuente+'/hqdefault.jpg'}} style={{width:120, height:120, marginLeft:130}} />
+            <Image source={{uri: 'https://img.youtube.com/vi/'+this.state.canciones[this.state.imagenMarcadas-1].fuente+'/hqdefault.jpg'}} style={{width:120, height:120, alignSelf:"center", marginBottom:10}} />
             }
             <SearchBar
           placeholder="Buscar en las Canciones..."
@@ -261,13 +264,18 @@ class MyLists extends Component {
                 <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
                 <Card.Title title={item.nombre} subtitle={item.artista} left={(props) => <TouchableOpacity onPress = {() => {this.state.imagenMarcadas = item.idCancion; this.forceUpdate();}}><Image source={{uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcadas == item.idCancion ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
                     onPress={() => {this.state.cancionesMarcadas[Number(item.idCancion)-1] = !this.state.cancionesMarcadas[Number(item.idCancion)-1]; this.forceUpdate();console.log("canciones marcadas ",this.state.cancionesMarcadas)}}
-                  >{this.state.cancionesMarcadas[Number(item.idCancion)-1] == true? <Icon
+                  >{this.state.cancionesMarcadas[Number(item.idCancion)-1] == true? 
+                    <Icon 
+                    style={{marginRight:10}}
                     name='check'
                     type='Entypo'
-                    /> :<Icon
-                name='add'
-                type='Ionicons'
-                />}
+                    /> 
+                    :
+                    <Icon 
+                      style={{marginRight:10}}
+                      name='add'
+                      type='Ionicons'
+                    />}
                 </TouchableOpacity>
                 }/>
                 
@@ -357,7 +365,7 @@ class MyLists extends Component {
           </View>
         </Modal> 
         <TouchableOpacity style={styles.loginBtn} onPress={() => {console.log("canciones marcadas: ",this.state.cancionesMarcadas); this.toggleModal(); }}>
-          <Text style={styles.loginText}>Anadir Nueva Lista (+)</Text>
+          <Text style={styles.loginText}>Añadir Nueva Lista (+)</Text>
         </TouchableOpacity>
         <SearchBar
           placeholder="Buscar en las Listas..."
@@ -468,8 +476,10 @@ const styles = StyleSheet.create({
     color:"white"
   },
   inputText:{
-    height:50,
-    color:"white"
+    height:30,
+    fontSize:17,
+    color:"black",
+    //fontWeight:"bold"
   },
   container2: {
     flex: 1,
@@ -488,11 +498,12 @@ const styles = StyleSheet.create({
   
   inputView:{
     width:"80%",
-    backgroundColor:"#1a2e6e",
+    backgroundColor:"#bfceff",
     borderRadius:25,
-    height:50,
-    marginBottom:20,
+    height:30,
+    marginBottom:10,
     justifyContent:"center",
-    padding:20
+    padding:20,
+    alignSelf:"center"
   },
 });

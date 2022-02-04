@@ -21,6 +21,15 @@ const Item = ({ title }) => {
     </View>
   );
 };
+
+const getDefaultCoverImage = view => {
+  var str;
+  if(view == "Lobby"){
+    return require("../list.jpg");
+  } else {
+    return require("../jukebox.jpg");
+  }
+}
   
 class MyRockolas extends Component {
   constructor(props) {
@@ -172,23 +181,25 @@ class MyRockolas extends Component {
         transparent= {false}
         visible={this.state.modalShown}
         toggle={this.toggleModal}
-        onRequestClose={() => {console.log("Closing Modal..."); Alert.alert("Modal Closed."); this.getListas();
-          
-        this.toggleModal();}} 
-       >
+        onRequestClose={() => {
+          console.log("Closing Modal..."); 
+          //Alert.alert("Modal Closed."); 
+          this.getListas();
+          this.toggleModal();
+        }}>
          <View style={{flex:1}}>
            <View>
+           <Text style={{fontSize:20, fontWeight:"bold", alignSelf:"center", marginBottom: 5}}>Crear una Nueva Rockola</Text>
            <View style={styles.inputView}>
             <TextInput  
             style={styles.inputText}
             placeholder="Nombre de La Nueva Rockola..." 
-            placeholderTextColor="#ffffff"
             onChangeText={text => this.state.nombreNuevaRockola= text}/>
             </View>
             {this.state.imagenMarcada == ""? 
-            <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la Rockola.</Text>
+            <Text style= {{textAlign : "center", fontSize:15, marginBottom:5}}>Seleccione la imagen de una lista para convertirla en la carátula de la Rockola</Text>
             :
-            <Image source={{uri: 'https://img.youtube.com/vi/'+this.state.imagenMarcada+'/hqdefault.jpg'}} style={{width:120, height:120, marginLeft:130}} />
+            <Image source={{uri: 'https://img.youtube.com/vi/'+this.state.imagenMarcada+'/hqdefault.jpg'}} style={{width:120, height:120, alignSelf:"center", marginBottom:10}} />
             }            
             <SearchBar
           placeholder="Buscar en las Listas..."
@@ -217,15 +228,20 @@ class MyRockolas extends Component {
                 <Card.Title title={item.nombre}  left={(props) => <TouchableOpacity onPress = {() => {
                   if(item.cover != ""){
                     this.state.imagenMarcada = item.cover
-                  }; this.forceUpdate();}}><Image source={item.cover == "" ? { uri: 'https://picsum.photos/id/145/500' } : {uri: 'https://img.youtube.com/vi/'+item.cover+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcada == item.cover ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
+                  }; this.forceUpdate();}}><Image source={item.cover == "" ? getDefaultCoverImage("Lobby") : {uri: 'https://img.youtube.com/vi/'+item.cover+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcada == item.cover ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
                     onPress={() => {this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)] = !this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)]; this.forceUpdate();}}
-                  >{this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)] == true? <Icon
-                    name='check'
-                    type='Entypo'
-                    /> :<Icon
-                name='add'
-                type='Ionicons'
-                />}
+                  >{this.state.listasMarcadas[this.state.idListas.indexOf(item.idLista)] == true? 
+                    <Icon
+                      style={{marginRight:10}}  
+                      name='check'
+                      type='Entypo'
+                    /> 
+                    :
+                    <Icon
+                      style={{marginRight:10}}
+                      name='add'
+                      type='Ionicons'
+                    />}
                 </TouchableOpacity>
                 }/>
                 
@@ -323,7 +339,7 @@ class MyRockolas extends Component {
         </Modal>
 
         <TouchableOpacity style={styles.loginBtn} onPress={() => {this.toggleModal(); }}>
-          <Text style={styles.loginText}>Anadir Nueva Rockola (+)</Text>
+          <Text style={styles.loginText}>Añadir Nueva Rockola (+)</Text>
         </TouchableOpacity>
         <SearchBar
           placeholder="Buscar en Rockolas..."
@@ -396,56 +412,58 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps)(MyRockolas);
   
 const styles = StyleSheet.create({
-    container: {
-      marginTop: 30,
-      padding: 2,
-    },
-    item: {
-      backgroundColor: "#585f71",
-      padding: 20,
-      marginVertical: 8,
-      marginHorizontal: 16,
-    },
-    loginBtn:{
-      width:"80%",
-      backgroundColor:"#912427",
-      borderRadius:10,
-      height:25,
-      alignItems:"center",
-      justifyContent:"center",
-      marginTop:5,
-      marginBottom:10,
-      marginLeft:45
-    },
-    loginText:{
-      color:"white"
-    },
-    inputText:{
-      height:50,
-      color:"white"
-    },
-    container2: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    checkboxContainer: {
-      marginBottom: 10,
-    },
-    checkbox: {
-      alignSelf: "center",
-    },
-    label: {
-      margin: 8,
-    },
-    
-    inputView:{
-      width:"80%",
-      backgroundColor:"#1a2e6e",
-      borderRadius:25,
-      height:50,
-      marginBottom:20,
-      justifyContent:"center",
-      padding:20
-    },
-  });
+  container: {
+    marginTop: 30,
+    padding: 2,
+  },
+  item: {
+    backgroundColor: "#585f71",
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  loginBtn:{
+    width:"80%",
+    backgroundColor:"#912427",
+    borderRadius:10,
+    height:25,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:5,
+    marginBottom:10,
+    marginLeft:45
+  },
+  loginText:{
+    color:"white"
+  },
+  container2: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxContainer: {
+    marginBottom: 10,
+  },
+  checkbox: {
+    alignSelf: "center",
+  },
+  label: {
+    margin: 8,
+  },
+  inputText:{
+    height:30,
+    fontSize:17,
+    color:"black",
+    //fontWeight:"bold"
+  },
+  inputView:{
+    width:"80%",
+    backgroundColor:"#bfceff",
+    borderRadius:25,
+    height:30,
+    marginBottom:10,
+    justifyContent:"center",
+    padding:20,
+    alignSelf:"center"
+  },
+});

@@ -165,7 +165,7 @@ class AddFriends extends Component {
             <View style={{flex:1}}>
                <View>
                <View style>
-               <Text style= {{textAlign : "center", fontSize:20, marginTop: 30}}>Personas que se puede agregar</Text>
+               <Text style= {{textAlign : "center", fontSize:20, fontWeight:"bold", marginTop: 30}}>Personas que se pueden agregar</Text>
                 </View>
                 
                 
@@ -194,7 +194,7 @@ class AddFriends extends Component {
                     
     
                     
-                    <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
+                    <Card style={{ marginBottom:5, width: windowWidth*0.95, marginRight:5, marginLeft:5, borderRadius:10}}>
                     <Card.Title title={item.username} left={(props) =><Image source={{uri: getProfilePic(item.id)}} style={{width:50, height:50}} />} right={(props) => <TouchableOpacity
                         onPress={() => {
                             fetch('https://musicboss-app.herokuapp.com/api/usuario/'+this.state.uid+'/solicitud/'+item.id+'/', {
@@ -218,10 +218,10 @@ class AddFriends extends Component {
                                 }
                             })
                         }}
-                      ><Icon
+                      >
+                    <Icon style={{marginRight:10}}
                     name='add'
-                    type='Ionicons'
-                    />
+                    type='Ionicons'/>
                     </TouchableOpacity>
                     }/>
                     
