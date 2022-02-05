@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react'
-import { FlatList, Text, Touchable, TouchableOpacity, View, Image } from 'react-native'
+import { FlatList, Text, Touchable, TouchableOpacity, View, Image, Alert } from 'react-native'
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import { useSelector } from 'react-redux';
 import { selectOrigin } from '../slices/navSlice';
@@ -12,20 +12,33 @@ const windowWidth = Dimensions.get('window').width;
 
 const Bottom = ({data}) => {
     const navigation = useNavigation();
-    const nou = useSelector(selectNoUser)
+    const noUser = useSelector(selectNoUser)
 
     return (
         <View>        
             {
-            nou == true ?
+            noUser == true ?
         <FlatList 
         data = {data} 
         horizontal
         keyExtractor = {(item) => item.id}
         renderItem={({item}) => (
             <TouchableOpacity
-                onPress={() => navigation.navigate(item.screen)}
-                disabled={true}
+                onPress={() => {
+                    item.title == "Explorar" ? navigation.navigate(item.screen) 
+                    : 
+                    Alert.alert(
+                        "Usuario requerido",
+                        "\nTienes que iniciar sesión para crear listas y rockolas, guardar tus favoritos, acceder a tu perfil de usuario y agregar amigos.\n",
+                        [
+                          {
+                            text: "Iniciar Sesión",
+                            onPress: () => { navigation.navigate('LoginPage') },
+                          },
+                          { text: "OK" }
+                        ]
+                      )}}
+                //disabled={true}
                 style={[{width : windowWidth/4,  
                 alignItems:"center",
                 justifyContent:"center"}, item.disabled == "true" ? {backgroundColor:"#BA3437"} : {backgroundColor:"#787878"}]}

@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import SongsPage from './SongsPage'
 import ListofListsfromRockola from './ListofListsfromRockola'
 import { Icon } from 'react-native-elements'
-import {setSongs, setNList, setLists, setEditList, setSongsList, setView} from '../slices/navSlice'
+import {setSongs, setNList, setLists, setEditList, setSongsList, setView, setNoUser} from '../slices/navSlice'
 import { useDispatch } from 'react-redux';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import {selectUsername, selectToken, selectUserId, selectNoUser} from '../slices/navSlice'
@@ -49,7 +49,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   const navigation = useNavigation();
   const token = useSelector(selectToken);
   const uid = useSelector(selectUserId);
-  const nou = useSelector(selectNoUser);
+  const noUsr = useSelector(selectNoUser);
   const editPost = () => {
     if(view == "Lobby"){
       dispatch(setEditList(lista));
@@ -135,6 +135,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
       const ln = lista;
       dispatch(setNList(ln));
       dispatch(setView(view));
+      dispatch(setNoUser(noUsr));
       navigation.navigate('ListofListsfromRockola',);
     }
   }
@@ -203,8 +204,18 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
 
   <Card>
     <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={view == "Rockola" || view=="MyRockola" || view == "RockolasFavoritos" ? LeftContentRockola : LeftContentLista } right={(props) => 
-      nou == true ?
-      <TouchableOpacity onPress={_ => {Alert.alert("Por favor cree una cuenta para poder agregar a favoritos!"); navigation.navigate('LoginPage')}}>
+      noUsr == true ?
+      <TouchableOpacity onPress={_ => {Alert.alert(
+        "Usuario requerido",
+        "\nTienes que iniciar sesión para crear listas y rockolas, guardar tus favoritos, acceder a tu perfil de usuario y agregar amigos.\n",
+        [
+          {
+            text: "Iniciar Sesión",
+            onPress: () => { navigation.navigate('LoginPage') },
+          },
+          { text: "OK" }
+        ]
+      )}}>
       <Icon style={{marginRight:10}}
         name='hearto'
         type='ant-design'

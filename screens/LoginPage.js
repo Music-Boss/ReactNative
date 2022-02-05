@@ -106,7 +106,7 @@ const LoginPage = () =>{
             }))}/>
         </View>
         <TouchableOpacity>
-          <Text style={styles.forgot}>Olvidaste la contraseña?</Text>
+          <Text style={{color:"black"}}>¿Olvidaste la contraseña?</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress={() => login()}>
           <Text style={styles.loginText}>LOGIN</Text>
@@ -114,8 +114,9 @@ const LoginPage = () =>{
         <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(SignUpPage)}>
           <Text style={styles.loginText}>REGISTRARSE</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn}  onPress={() => {dispatch(setNoUser(true));navigation.navigate('Lobby')}}>
-          <Text style={styles.loginText}>INGRESAR SIN CUENTA</Text>
+        <Text style={{color:"black", marginTop:10}}>O puedes acceder a funciones básicas sin una cuenta</Text>
+        <TouchableOpacity onPress={() => {dispatch(setNoUser(true));navigation.navigate('Lobby')}}>
+          <Text style={{color:"red", textDecorationLine:"underline"}}>aquí</Text>
         </TouchableOpacity>
 
   

@@ -27,39 +27,83 @@ class ListofListsfromRockola extends Component {
       }
     );*/    
 
-    console.log("props-list:", this.props.view);
+    //console.log("view:", this.props.view);
+    //console.log("props.rockola.usuario.username ", this.props.rockola.usuario.username );
+    //console.log("current username ", this.props.currUsername.text );
+    //console.log("No User? ", this.props.noUser );
+
+
+    var owner = false;  //Si es el dueño de la rockola
+    
+    if(this.props.noUser == false){
+      if(this.props.rockola.usuario.username == this.props.currUsername.text){
+        owner = true;
+      }
+    }
 
     this.state = {
       loading: true,
       lista: null,
-      rockola: null,
-      idrockola: this.props.rockola.idRockola,
+      rockola: this.props.rockola,
       token: this.props.token,
       idcanciones:[],
-      playlist: []
+      playlist: [],
+      owner: owner,
     };
+    this.updateRockola();
     //this.arrayholder = DATA;
   }
 
   componentDidMount() {
-    this.state.loading = true;
-    fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.idrockola+'/')
-    .then(res => {return res.json()})
-    .then(res => {this.state.rockola = res})
-    .then(res => {
-      console.log('rockola inicial:',this.state.rockola)
-      this.state.lista = this.state.rockola.listas[0];
-      for(let i = 0; i < this.state.rockola.canciones.length; i++){
-        this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
-        this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
-      }
-      for(let j = 0; j < this.state.lista.canciones.length; j++){
-        console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
-      }
-      console.log("PLAYLIST: ", this.state.playlist)
-      this.state.loading = false;
-      this.forceUpdate();
-    }) 
+    this.updateRockola();
+    //this.state.lista = this.state.rockola.listas[0];
+    /*for(let i = 0; i < this.state.rockola.canciones.length; i++){
+      this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+      this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
+    }*/
+    /*for(let j = 0; j < this.state.lista.canciones.length; j++){
+      console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
+    } */        
+    //this.setState({loading: false})
+    //this.forceUpdate()
+  }
+
+
+  updateRockola = () => {
+    /*this.setState({
+      loading: true
+    })*/
+    fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
+      {
+        method: 'GET',
+        headers: {
+        'Content-Type':'application/json'
+        }
+        })
+        .then(response => {
+          //console.log("rockola raws: "+response);
+          return response.json()
+        })
+        .then(response => {
+          //console.log("rockola json ", response)
+          var idcanciones = [];
+          var playlist = [];
+          for(let i = 0; i < response.canciones.length; i++){
+            idcanciones = [...idcanciones, response.canciones[i].idCancion]
+            playlist = [...playlist, response.canciones[i].fuente]
+          }
+          this.setState({
+            rockola : response,
+            lista : response.listas[0],
+            idcanciones : idcanciones,
+            playlist : playlist,
+            loading: false
+          });
+          
+
+        })
+        .catch(error => console.log("Error", error));
+      this.forceUpdate()
   }
 
   renderItem = ({item}) => {
@@ -76,7 +120,7 @@ class ListofListsfromRockola extends Component {
           </Card.Actions>
           */}
           <TouchableOpacity
-            style={this.state.idcanciones.indexOf(item.idCancion) > -1 ? styles.loginBtnDisabled : styles.loginBtn }
+            style={this.state.idcanciones.indexOf(item.idCancion) > -1 ? styles.agregarBtnDisabled : styles.agregarBtn }
             disabled = {this.state.idcanciones.indexOf(item.idCancion) > -1 ? true : false}
                           onPress={() => {
                                 fetch('https://musicboss-app.herokuapp.com/api/rockola/'+this.state.rockola.idRockola+'/canciones/add/'+item.idCancion+'/', 
@@ -84,60 +128,20 @@ class ListofListsfromRockola extends Component {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type':'application/json',  
-                                    'Authorization':'Token '+this.state.token
+                                    //'Authorization':'Token '+this.state.token
                                   }
+                                  
                                 })
                                 .then(response => {
                                   if (response.ok) {
-                                    Alert.alert("Rockola Editada");
+                                    Alert.alert("Canción agregada a la lista de reproducción");
                                     console.log("response ", response)
-                                    fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
-                                    {
-                                      method: 'GET',
-                                      headers: {
-                                        'Content-Type':'application/json'
-                                      }
-                                    })
-                                    .then(response => {
-                                      if (response.ok) {
-                                        return response;
-                                      }
-                                      else {
-                                        var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                                        error.response = response;
-                                        Alert.alert("Rockola No Pudo Ser Editada");
-                                        throw error;
-                                        }
-                                    },
-                                    error => {
-                                            throw error;
-                                    })
-                                    .then(response => response.json() )
-                                    .then(response => {
-                                      console.log("response add song ", response)
-                                      this.state.rockola = response;
-                                      this.state.lista = this.state.rockola.listas[0];
-                                      this.state.idcanciones = [];
-                                      this.state.playlist = [];
-                                      for(let i = 0; i < this.state.rockola.canciones.length; i++){
-                                        this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
-                                        this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
-                                      }
-
-                                      this.props.setRockola(response);
-                                      //this.props.navigation.navigate('MyRockolas');
-                                      //this.props.navigation.navigate('ListofListsfromRockola');
-                                      this.forceUpdate();
-                                      this.componentDidMount();
-                                      
-                                    })
-                                    .catch(error => console.log("Error", error));
-                                    return response;
+                                    this.updateRockola();
                                   }
                                   else {
                                     var error = new Error('Error ' + response.status + ': ' + response.statusText);
                                     error.response = response;
-                                    Alert.alert("Rockola No Pudo Ser Editada");
+                                    Alert.alert("La canción no pudo ser agregada a la lista de reproducción");
                                     throw error;
                                     }
                                 },
@@ -254,51 +258,12 @@ class ListofListsfromRockola extends Component {
                               })
                               .then(response => {
                                 if (response.ok) {
-                                  fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
-                                  {
-                                    method: 'GET',
-                                    headers: {
-                                      'Content-Type':'application/json'
-                                    }
-                                  })
-                                  .then(response => {
-                                    if (response.ok) {
-                                      return response;
-                                    }
-                                    else {
-                                      var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                                      error.response = response;
-                                      throw error;
-                                      }
-                                  },
-                                  error => {
-                                          throw error;
-                                  })
-                                  .then(response => response.json() )
-                                  .then(response => {
-                                    
-                                    this.state.rockola = response;
-                                    console.log("song eliminated:", this.state.rockola)
-                                    this.state.lista = this.state.rockola.listas[0];
-                                    this.state.idcanciones = [];
-                                    this.state.playlist = [];
-                                    for(let i = 0; i < this.state.rockola.canciones.length; i++){
-                                      this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
-                                      this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
-                                    }
-                                    this.props.setRockola(response);
-                                    //this.props.navigation.navigate('MyRockolas');
-                                    //this.props.navigation.navigate('ListofListsfromRockola');
-                                    this.forceUpdate();
-                                    this.componentDidMount();
-                                  })
-                                  .catch(error => console.log("Error", error));
-                                  return response;
-                                }
-                                else {
+                                  Alert.alert("Canción eliminada");
+                                  this.updateRockola();
+                                } else {
                                   var error = new Error('Error ' + response.status + ': ' + response.statusText);
                                   error.response = response;
-                                  Alert.alert("Rockola No Pudo Ser Editada");
+                                  Alert.alert("La canción no pudo ser eliminada");
                                   throw error;
                                   }
                               },
@@ -308,9 +273,15 @@ class ListofListsfromRockola extends Component {
                               .catch(error => console.log("Error", error));
                             
                           
-                        }}
-                      >
-                        <Text style={{marginRight:20}}>Eliminar</Text>
+                        }}>
+                        {this.state.owner?
+                        <View style={styles.eliminarBtn}>
+                          <Text style={styles.loginText}>Eliminar</Text>
+                        </View>
+                        :
+                        <></>
+                        }
+                        
                     </TouchableOpacity>
                     }/>
                     
@@ -388,7 +359,8 @@ const mapStateToProps = state => {
       currUsername: state.nav.username,
       uid: state.nav.userid,
       rockola: state.nav.nList,
-      view: state.nav.currView
+      view: state.nav.currView,
+      noUser: state.nav.noUser
   }
 }
 
@@ -406,7 +378,20 @@ const styles = StyleSheet.create({
     marginTop: 30,
     padding: 2,
   },
-  loginBtn:{
+  eliminarBtn:{
+    width:"80%",
+    backgroundColor: "#912427",
+    alignSelf:"center",
+    borderRadius:25,
+    height:25,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:10,
+    marginBottom:10,
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  agregarBtn:{
     width:"80%",
     backgroundColor: "#912427",
     alignSelf:"center",
@@ -419,7 +404,10 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
   },
-  loginBtnDisabled:{
+  loginText:{
+    color:"white",
+  },
+  agregarBtnDisabled:{
     width:"80%",
     backgroundColor: "#787878",
     alignSelf:"center",
@@ -443,8 +431,5 @@ const styles = StyleSheet.create({
     backgroundColor:"#BA3437", 
     padding:5, 
     marginBottom:5
-  },
-  loginText:{
-    color:"white",
   }
 });

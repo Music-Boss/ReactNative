@@ -136,7 +136,7 @@ class EditList extends Component {
             <View style={{flex:1}}>
                <View>
                <View style>
-               <Text style= {{textAlign : "center", fontSize:20, marginTop: 30}}>Lista: {this.state.nombreLista}</Text>
+               <Text style= {{textAlign : "center", fontSize:20, fontWeight:"bold", marginTop: 30}}>Lista: {this.state.nombreLista}</Text>
                <View style={styles.inputView}>
                <TextInput  
             style={styles.inputText}
@@ -147,7 +147,7 @@ class EditList extends Component {
                 {this.state.imagenMarcadas == "" && this.state.cover == ""? 
                 <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la lista</Text>
                 :
-                <Image source={this.state.imagenMarcadas == "" ? {uri: 'https://img.youtube.com/vi/'+this.state.cover+'/hqdefault.jpg'} : {uri: 'https://img.youtube.com/vi/'+this.state.imagenMarcadas+'/hqdefault.jpg'}} style={{width:120, height:120, marginLeft:130}}  />
+                <Image source={this.state.imagenMarcadas == "" ? {uri: 'https://img.youtube.com/vi/'+this.state.cover+'/hqdefault.jpg'} : {uri: 'https://img.youtube.com/vi/'+this.state.imagenMarcadas+'/hqdefault.jpg'}} style={{width:120, height:120, alignSelf:"center", marginBottom:10}}  />
                 }
                 
                  <SearchBar
@@ -178,12 +178,17 @@ class EditList extends Component {
                     <Card style={{ marginBottom:15, width: windowWidth*0.95, marginRight:5, marginLeft:5}}>
                     <Card.Title title={item.nombre} subtitle={item.artista} left={(props) => <TouchableOpacity onPress = {() => {this.state.imagenMarcadas = item.fuente; this.forceUpdate();}}><Image source={{uri: 'https://img.youtube.com/vi/'+item.fuente+'/hqdefault.jpg'}} style={[{width:50, height:50}, this.state.imagenMarcadas == item.fuente ? {opacity:0.5} : {opacity:1}]} /></TouchableOpacity>} right={(props) => <TouchableOpacity
                         onPress={() => {this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] = !this.state.cancionesMarcadas[this.state.canciones.indexOf(item)]; this.forceUpdate();console.log("canciones marcadas ",this.state.cancionesMarcadas);console.log("canciones query ",this.state.cancionesquery); console.log("canciones item ", this.state.canciones.indexOf(item))}}
-                      >{this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] == true? <Icon
+                      >{this.state.cancionesMarcadas[this.state.canciones.indexOf(item)] == true? 
+                      <Icon
+                        style={{marginRight:10}}
                         name='check'
                         type='Entypo'
-                        /> :<Icon
-                    name='add'
-                    type='Ionicons'
+                        /> 
+                        :
+                      <Icon
+                        style={{marginRight:10}}
+                        name='add'
+                        type='Ionicons'
                     />}
                     </TouchableOpacity>
                     }/>
