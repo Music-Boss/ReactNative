@@ -51,6 +51,9 @@ export const navSlice = createSlice({
         setView: (state, action) => {
             state.currView = action.payload
         }, 
+        setNoUser: (state, action) => {
+            state.noUser = action.payload
+        }, 
     }
 });
 
@@ -67,7 +70,8 @@ export const {  setName,
                 setAllLists, 
                 setEditList, 
                 setSongsList,
-                setView} = navSlice.actions;
+                setView,
+                setNoUser} = navSlice.actions;
 
 // Selectors
 export const selectName = (state) => state.nav.name;
@@ -95,5 +99,7 @@ export const selectEditList = (state) => state.nav.editList;
 export const selectSongsList = (state) => state.nav.songsList;
 
 export const selectView = (state) => state.nav.view;
+
+export const selectNoUser = (state) => state.nav.noUser;
 
 export default navSlice.reducer;

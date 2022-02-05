@@ -32,7 +32,8 @@ class ListofListsfromRockola extends Component {
     this.state = {
       loading: true,
       lista: null,
-      rockola: this.props.rockola,
+      rockola: null,
+      idrockola: this.props.rockola.idRockola,
       token: this.props.token,
       idcanciones:[],
       playlist: []
@@ -41,16 +42,24 @@ class ListofListsfromRockola extends Component {
   }
 
   componentDidMount() {
-    this.state.lista = this.state.rockola.listas[0];
-    for(let i = 0; i < this.state.rockola.canciones.length; i++){
-      this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
-      this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
-    }
-    for(let j = 0; j < this.state.lista.canciones.length; j++){
-      console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
-    }         
-    this.state.loading = false;
-    this.forceUpdate()
+    this.state.loading = true;
+    fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.idrockola+'/')
+    .then(res => {return res.json()})
+    .then(res => {this.state.rockola = res})
+    .then(res => {
+      console.log('rockola inicial:',this.state.rockola)
+      this.state.lista = this.state.rockola.listas[0];
+      for(let i = 0; i < this.state.rockola.canciones.length; i++){
+        this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+        this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
+      }
+      for(let j = 0; j < this.state.lista.canciones.length; j++){
+        console.log("lista ", this.state.idcanciones.indexOf(this.state.lista.canciones[j].idCancion))
+      }
+      console.log("PLAYLIST: ", this.state.playlist)
+      this.state.loading = false;
+      this.forceUpdate();
+    }) 
   }
 
   renderItem = ({item}) => {
@@ -108,8 +117,18 @@ class ListofListsfromRockola extends Component {
                                       console.log("response add song ", response)
                                       this.state.rockola = response;
                                       this.state.lista = this.state.rockola.listas[0];
-                                      this.state.idcanciones = [...this.state.idcanciones, item.idCancion]
+                                      this.state.idcanciones = [];
+                                      this.state.playlist = [];
+                                      for(let i = 0; i < this.state.rockola.canciones.length; i++){
+                                        this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
+                                        this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
+                                      }
+
+                                      this.props.setRockola(response);
+                                      //this.props.navigation.navigate('MyRockolas');
+                                      //this.props.navigation.navigate('ListofListsfromRockola');
                                       this.forceUpdate();
+                                      this.componentDidMount();
                                       
                                     })
                                     .catch(error => console.log("Error", error));
@@ -235,7 +254,6 @@ class ListofListsfromRockola extends Component {
                               })
                               .then(response => {
                                 if (response.ok) {
-                                  Alert.alert("Rockola Editada");
                                   fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
                                   {
                                     method: 'GET',
@@ -260,6 +278,7 @@ class ListofListsfromRockola extends Component {
                                   .then(response => {
                                     
                                     this.state.rockola = response;
+                                    console.log("song eliminated:", this.state.rockola)
                                     this.state.lista = this.state.rockola.listas[0];
                                     this.state.idcanciones = [];
                                     this.state.playlist = [];
@@ -267,7 +286,11 @@ class ListofListsfromRockola extends Component {
                                       this.state.idcanciones = [...this.state.idcanciones, this.state.rockola.canciones[i].idCancion]
                                       this.state.playlist = [...this.state.playlist, this.state.rockola.canciones[i].fuente]
                                     }
+                                    this.props.setRockola(response);
+                                    //this.props.navigation.navigate('MyRockolas');
+                                    //this.props.navigation.navigate('ListofListsfromRockola');
                                     this.forceUpdate();
+                                    this.componentDidMount();
                                   })
                                   .catch(error => console.log("Error", error));
                                   return response;

@@ -51,7 +51,9 @@ class Lobby extends Component {
       usuarios: [],
       currUsername: this.props.currUsername,
       userId: null,
-      fav_listas:[]
+      fav_listas:[],
+      noUser: this.props.noUser,
+      listaids: []
     };
     //this.arrayholder = DATA;
   }
@@ -74,6 +76,15 @@ componentWillUnmount(){
 
     this.state.fav_listas = [];
 
+    
+
+    
+
+    
+
+    if(this.state.noUser == false){
+    this.state.token = this.props.token;
+    console.log("token ", this.state.token);
     fetch(this.state.url)
     .then(res => {
       console.log("res raws: "+res);
@@ -84,81 +95,124 @@ componentWillUnmount(){
         query: res
       })
       console.log("res json: " +res);
-      console.log("uid:", this.state.uid)
     })
     .then(_ => {
       for(let i = 0; i < this.state.data.length; i++){
         this.state.listaids = [this.state.data[i].idLista, ...this.state.listaids]
       }
-    });
-
-    this.state.token = this.props.token;
-    console.log("token ", this.state.token);
-
-    fetch(this.state.urlCanciones)
-    .then(res => {
-      console.log("res raws canciones: "+res);
-      return res.json()})
-    .then(res => {
-      this.setState({
-        canciones: res,
-        cancionesquery:res
-      })
-      console.log("res json canciones: " +res);
-    })
-    .then(_ => {
-      console.log("length: ", this.state.canciones.length)
-      for(let i = 0; i < this.state.canciones.length; i++){
-        this.state.cancionesMarcadas = [...this.state.cancionesMarcadas, false]
-      };
-      console.log("length: ", this.state.cancionesMarcadas)
-    });
-
-    fetch(this.state.urlUsuarios)
-    .then(res => {
-      console.log("res raws usuarios: "+res);
-      return res.json()})
-    .then(res => {
-      this.setState({
-        usuarios: res
-      })
-      console.log("res json usuarios: " +res);
-    })
-    .then(_ => {
-      console.log("length: ", this.state.usuarios.length);
-      console.log("users: ", this.state.usuarios);
-      console.log("curruser: ", this.state.currUsername.text);
-      
-      for(let i = 0; i < this.state.usuarios.length; i++){
-        if(this.state.usuarios[i].username == this.state.currUsername.text){
-          this.props.setUserid(this.state.usuarios[i].id);
-          this.state.userId = this.state.usuarios[i].id;
-        }
-      };
-      console.log("Usuario guardado en estado! ", this.state.userId)
-    })
-    .then(_ => {
-      fetch("https://musicboss-app.herokuapp.com/api/usuario/info/"+this.state.userId+"/")
+      fetch(this.state.urlCanciones)
       .then(res => {
-        console.log("res raws: "+res);
+        console.log("res raws canciones: "+res);
         return res.json()})
       .then(res => {
-        console.log("LONGITUD DE FAV_LISTAS:",res.fav_listas.length)
-        for(let i = 0; i < res.fav_listas.length; i++){
-          this.state.fav_listas = [...this.state.fav_listas, res.fav_listas[i].idLista]
-        }
-        console.log("Fav_Listas:", this.state.fav_listas)
-      
-        console.log("res json: " +res);
+        this.setState({
+          canciones: res,
+          cancionesquery:res
+        })
+        console.log("res json canciones: " +res);
       })
       .then(_ => {
-        console.log("Pantalla cargada")
+        console.log("length: ", this.state.canciones.length)
+        for(let i = 0; i < this.state.canciones.length; i++){
+          this.state.cancionesMarcadas = [...this.state.cancionesMarcadas, false]
+        };
+        console.log("length: ", this.state.cancionesMarcadas)
+        fetch(this.state.urlUsuarios)
+        .then(res => {
+          console.log("res raws usuarios: "+res);
+          return res.json()})
+        .then(res => {
+          this.setState({
+            usuarios: res
+          })
+          console.log("res json usuarios: " +res);
+        })
+        .then(_ => {
+          console.log("length: ", this.state.usuarios.length);
+          console.log("users: ", this.state.usuarios);
+          console.log("curruser: ", this.state.currUsername.text);
+          
+          for(let i = 0; i < this.state.usuarios.length; i++){
+            if(this.state.usuarios[i].username == this.state.currUsername.text){
+              this.props.setUserid(this.state.usuarios[i].id);
+              this.state.userId = this.state.usuarios[i].id;
+            }
+          };
+          console.log("Usuario guardado en estado! ", this.state.userId)
+        })
+        .then(_ => {
+          fetch("https://musicboss-app.herokuapp.com/api/usuario/info/"+this.state.userId+"/")
+          .then(res => {
+            console.log("res raws: "+res);
+            return res.json()})
+          .then(res => {
+            console.log("LONGITUD DE FAV_LISTAS:",res.fav_listas.length)
+            for(let i = 0; i < res.fav_listas.length; i++){
+              this.state.fav_listas = [...this.state.fav_listas, res.fav_listas[i].idLista]
+            }
+            console.log("Fav_Listas:", this.state.fav_listas)
+          
+            console.log("res json: " +res);
+          })
+          .then(_ => {
+            console.log("Pantalla cargada")
+            this.setState({
+              loading: false
+            })
+            this.forceUpdate()
+          });
+
+    });
+
+      });
+    });
+    
+  }
+  else{
+    console.log("NO USER!")
+    fetch(this.state.url)
+    .then(res => {
+      console.log("res raws: "+res);
+      return res.json()})
+    .then(res => {
+      this.setState({
+        data: res,
+        query: res
+      })
+      console.log("res json: " +res);
+    })
+    .then(_ => {
+      console.log("Before it crashes!");
+      for(let i = 0; i < this.state.data.length; i++){
+        this.state.listaids = [this.state.data[i].idLista, ...this.state.listaids]
+      }
+      fetch(this.state.urlCanciones)
+      .then(res => {
+        console.log("res raws canciones: "+res);
+        return res.json()})
+      .then(res => {
+        this.setState({
+          canciones: res,
+          cancionesquery:res
+        })
+        console.log("res json canciones: " +res);
+      })
+      .then(_ => {
+        console.log("length: ", this.state.canciones.length)
+        for(let i = 0; i < this.state.canciones.length; i++){
+          this.state.cancionesMarcadas = [...this.state.cancionesMarcadas, false]
+        };
+        console.log("length: ", this.state.cancionesMarcadas);
+        
         this.setState({
           loading: false
         })
-      });
+        
 
     });
+
+    });
+  }
 
     
 
@@ -254,7 +308,7 @@ componentWillUnmount(){
                 id:"1",
                 title:"Mis Listas",
                 image: "https://img.icons8.com/ios-glyphs/60/ffffff/playlist--v1.png",
-                screen: "MyLists", // Change in future....
+                screen: "MyLists", // Change in future...., 
             },
             {
               id:"2",
@@ -285,7 +339,8 @@ const mapStateToProps = state => {
   return {
       token: state.nav.token,
       currUsername: state.nav.username,
-      uid: state.nav.userid
+      uid: state.nav.userid,
+      noUser: state.nav.noUser
   }
 }
   

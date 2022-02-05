@@ -46,7 +46,8 @@ class EditList extends Component {
           uid: this.props.uid,
           imagenMarcadas: "",
           cover: this.props.editList.cover,
-          listaId: this.props.editList.idLista
+          listaId: this.props.editList.idLista,
+          nuevoNombre: ""
         };
         //this.arrayholder = DATA;
       }
@@ -136,6 +137,12 @@ class EditList extends Component {
                <View>
                <View style>
                <Text style= {{textAlign : "center", fontSize:20, marginTop: 30}}>Lista: {this.state.nombreLista}</Text>
+               <View style={styles.inputView}>
+               <TextInput  
+            style={styles.inputText}
+            placeholder="Cambiar nombre de la lista..."
+            onChangeText={text => this.state.nuevoNombre= text}/>
+            </View>
                 </View>
                 {this.state.imagenMarcadas == "" && this.state.cover == ""? 
                 <Text style= {{textAlign : "center", fontSize:15}}>Seleccione la imagen de una cancion para volverla el cover de la lista</Text>
@@ -218,10 +225,16 @@ class EditList extends Component {
                   this.setState({count: 0})
                   petition.slice(0,-2)
                   if(this.state.imagenMarcadas == "")
-                    petition = petition + ']}';
+                    petition = petition + ']';
                   else{
-                    petition = petition + '], "cover":"'+this.state.imagenMarcadas+'"}';
+                    petition = petition + '], "cover":"'+this.state.imagenMarcadas+'"';
                   }
+                  if(this.state.nuevoNombre == ""){
+                    petition = petition + '}'
+                  }  
+                  else{
+                    petition = petition + ', "nombre":"'+this.state.nuevoNombre+'"}'
+                  }  
                   console.log("petition ",petition);
                   fetch('https://musicboss-app.herokuapp.com/api/listas/'+this.state.listaId+'/', 
                   {
@@ -369,11 +382,18 @@ const styles = StyleSheet.create({
   
   inputView:{
     width:"80%",
-    backgroundColor:"#1a2e6e",
+    backgroundColor:"#bfceff",
     borderRadius:25,
-    height:50,
-    marginBottom:20,
+    height:30,
+    marginBottom:10,
     justifyContent:"center",
-    padding:20
+    padding:20,
+    alignSelf:"center"
   },
+  inputText:{
+    height:30,
+    fontSize:17,
+    color:"black",
+    //fontWeight:"bold"
+  }
 });

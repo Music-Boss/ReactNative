@@ -8,7 +8,7 @@ import { Icon } from 'react-native-elements'
 import {setSongs, setNList, setLists, setEditList, setSongsList, setView} from '../slices/navSlice'
 import { useDispatch } from 'react-redux';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import {selectUsername, selectToken, selectUserId} from '../slices/navSlice'
+import {selectUsername, selectToken, selectUserId, selectNoUser} from '../slices/navSlice'
 import { useSelector } from 'react-redux';
 
 
@@ -49,6 +49,7 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
   const navigation = useNavigation();
   const token = useSelector(selectToken);
   const uid = useSelector(selectUserId);
+  const nou = useSelector(selectNoUser);
   const editPost = () => {
     if(view == "Lobby"){
       dispatch(setEditList(lista));
@@ -202,6 +203,15 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
 
   <Card>
     <Card.Title title={lista.nombre} subtitle={lista.usuario == null ? "Usuario Anónimo" : "Creado por " + lista.usuario.username} left={view == "Rockola" || view=="MyRockola" || view == "RockolasFavoritos" ? LeftContentRockola : LeftContentLista } right={(props) => 
+      nou == true ?
+      <TouchableOpacity onPress={_ => {Alert.alert("Por favor cree una cuenta para poder agregar a favoritos!"); navigation.navigate('LoginPage')}}>
+      <Icon style={{marginRight:10}}
+        name='hearto'
+        type='ant-design'
+        color='#000000'
+      />
+      </TouchableOpacity>
+      :
       favorito == true ?
         lista.usuario != null ?
         lista.usuario.id == uid ?

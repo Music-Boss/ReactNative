@@ -38,7 +38,8 @@ class Rockolas extends Component {
       searchValue: "",
       token: "",
       uid: this.props.uid,
-      fav_rockolas: []
+      fav_rockolas: [],
+      noUser: this.props.noUser
     };
     //this.arrayholder = DATA;
   }
@@ -49,6 +50,10 @@ class Rockolas extends Component {
 
   getListas = () => {
     this.setState({ loading:true} );
+    
+    if(this.state.noUser == false)
+    {
+    this.state.token = this.props.token
 
     fetch(this.state.url)
     .then(res => {
@@ -60,11 +65,7 @@ class Rockolas extends Component {
         query: res
       })
       console.log("res json: " +res);
-    });
-
-    this.state.token = this.props.token
-
-    fetch("https://musicboss-app.herokuapp.com/api/usuario/info/"+this.state.uid+"/")
+      fetch("https://musicboss-app.herokuapp.com/api/usuario/info/"+this.state.uid+"/")
       .then(res => {
         console.log("res raws: "+res);
         return res.json()})
@@ -82,6 +83,29 @@ class Rockolas extends Component {
           loading: false
         })
       });
+    });
+  }
+  else{
+    fetch(this.state.url)
+    .then(res => {
+      console.log("res raws: "+res);
+      return res.json()})
+    .then(res => {
+      this.setState({
+        data: res,
+        query: res
+      })
+      console.log("res json: " +res);
+      this.setState({
+        loading: false
+      })
+      
+    });
+
+  }
+
+
+    
   };
 
   searchFunction = (text) => {
@@ -190,7 +214,8 @@ class Rockolas extends Component {
 const mapStateToProps = state => {
   return {
       token: state.nav.token,
-      uid: state.nav.userid
+      uid: state.nav.userid,
+      noUser: state.nav.noUser
   }
 }
   

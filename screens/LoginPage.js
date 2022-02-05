@@ -5,7 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import MainPage from './MainPage';
 import { useDispatch } from 'react-redux';
-import {setUsername, setPassword, setToken} from '../slices/navSlice'
+import {setUsername, setPassword, setToken, setNoUser} from '../slices/navSlice'
 import { navSlice } from '../slices/navSlice';
 import SignUpPage from './SignUpPage';
 import {selectUsername} from '../slices/navSlice'
@@ -24,6 +24,7 @@ const LoginPage = () =>{
     const pword = useSelector(selectPassword);
 
     const login = () => {
+      dispatch(setNoUser(false));
       console.log(JSON.stringify({
         username: username,
         password: pword
@@ -112,6 +113,9 @@ const LoginPage = () =>{
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(SignUpPage)}>
           <Text style={styles.loginText}>REGISTRARSE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.loginBtn}  onPress={() => {dispatch(setNoUser(true));navigation.navigate('Lobby')}}>
+          <Text style={styles.loginText}>INGRESAR SIN CUENTA</Text>
         </TouchableOpacity>
 
   

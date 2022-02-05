@@ -5,7 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import MainPage from './MainPage';
 import { useDispatch } from 'react-redux';
-import {setUsername, setEmail, setPassword, setPassword2, setLists, setToken} from '../slices/navSlice'
+import {setUsername, setEmail, setPassword, setPassword2, setLists, setToken, setNoUser} from '../slices/navSlice'
 import { navSlice } from '../slices/navSlice';
 import LoginPage from './LoginPage';
 import Lobby from './Lobby';
@@ -93,6 +93,7 @@ const SignUpPage = () =>{
             Alert.alert("Las contraseñas no coinciden.");
           }
           else{
+            dispatch(setNoUser(false));
             const petition = '{"username":"'+ username.text+'","email":"'+email.text+'","password":"'+password.text+'"}';
             console.log("petition ", petition)
             fetch('https://musicboss-app.herokuapp.com/api/usuarios/', 
