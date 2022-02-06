@@ -137,7 +137,9 @@ class ListofListsfromRockola extends Component {
                                 .then(response => {
                                   if (response.ok) {
                                     Alert.alert("Canción agregada a la lista de reproducción");
-                                    console.log("response ", response)
+                                    console.log("response ", response);
+                                    this.state.playsong = false;
+                                    this.forceUpdate();
                                     this.updateRockola();
                                   }
                                   else {
