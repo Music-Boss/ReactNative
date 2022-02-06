@@ -111,7 +111,7 @@ const LoginPage = () =>{
         <TouchableOpacity style={styles.loginBtn} onPress={() => login()}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(SignUpPage)}>
+        <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate('SignUpPage')}>
           <Text style={styles.loginText}>REGISTRARSE</Text>
         </TouchableOpacity>
         <Text style={{color:"black", marginTop:10}}>O puedes acceder a funciones básicas sin una cuenta</Text>

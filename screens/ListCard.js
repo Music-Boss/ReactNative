@@ -227,8 +227,8 @@ const ListCard = ({lista, view, favorito, esFavorito}) =>
         lista.usuario != null ?
         lista.usuario.id == uid ?
         <Icon style={{marginRight:10}}
-            name='check'
-            type='Entypo'
+            name='user-check'
+            type="feather"
          /> :
         esFavorito == true ?
         <TouchableOpacity onPress={() => 

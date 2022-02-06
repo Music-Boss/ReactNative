@@ -50,8 +50,6 @@ class ListofListsfromRockola extends Component {
       playlist: [],
       owner: owner,
     };
-    this.updateRockola();
-    //this.arrayholder = DATA;
   }
 
   componentDidMount() {

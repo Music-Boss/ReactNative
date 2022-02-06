@@ -174,7 +174,7 @@ const SignUpPage = () =>{
         }>
         <Text style={styles.loginText}>REGISTRARSE</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate(LoginPage)}>
+        <TouchableOpacity style={styles.loginBtn}  onPress={() => navigation.navigate('LoginPage')}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
       </View>
