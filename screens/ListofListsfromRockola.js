@@ -49,6 +49,7 @@ class ListofListsfromRockola extends Component {
       idcanciones:[],
       playlist: [],
       owner: owner,
+      playsong: false
     };
   }
 
@@ -70,7 +71,7 @@ class ListofListsfromRockola extends Component {
   updateRockola = () => {
     /*this.setState({
       loading: true
-    })*/
+    });*/
     fetch('https://musicboss-app.herokuapp.com/api/rockolas/'+this.state.rockola.idRockola+'/', 
       {
         method: 'GET',
@@ -97,11 +98,14 @@ class ListofListsfromRockola extends Component {
             playlist : playlist,
             loading: false
           });
+          console.log("PLAYLIST:",this.state.playlist)
+          
+          this.state.playsong = true;
+          this.forceUpdate();
           
 
         })
         .catch(error => console.log("Error", error));
-      this.forceUpdate()
   }
 
   renderItem = ({item}) => {
@@ -257,6 +261,8 @@ class ListofListsfromRockola extends Component {
                               .then(response => {
                                 if (response.ok) {
                                   Alert.alert("Canción eliminada");
+                                  this.state.playsong = false;
+                                  this.forceUpdate();
                                   this.updateRockola();
                                 } else {
                                   var error = new Error('Error ' + response.status + ': ' + response.statusText);
@@ -303,7 +309,7 @@ class ListofListsfromRockola extends Component {
       </ScrollView>
       <View>
         {
-          this.state.playlist.length == 0 || this.state.loading ?
+          this.state.playlist.length == 0 || this.state.loading || this.state.playsong == false?
           <View></View>
           :
         <YoutubePlayer
